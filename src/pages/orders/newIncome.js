@@ -174,8 +174,8 @@ export default function NewIncome() {
             type: 'REFRESH',
             payload: true
         })
-
         setLoading(false)
+        window.location.reload()
     }
 
     function liClicked(e, i) {
@@ -205,9 +205,6 @@ export default function NewIncome() {
         let productCode = parfum.map(function (el) {
             return el.productCode
         })
-        const filtered = productCode.filter(function (item, pos) {
-            return productCode.indexOf(item) == pos;
-        });
         let data = [...stock]
         for (let i = 0; i < productCode.length; i++) {
             const el = productCode[i];

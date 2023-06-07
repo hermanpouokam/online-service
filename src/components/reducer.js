@@ -1,10 +1,10 @@
-const userFromLocal = sessionStorage.getItem("userKilombo")
-const productsFromLocal = sessionStorage.getItem("productsKilombo")
-const customerFromLocal = sessionStorage.getItem("customerKilombo")
-const employeeFromKilombo = sessionStorage.getItem("employeeKilombo")
-const customerInfoFromLocal = sessionStorage.getItem("customerInfoKilombo")
-const stockFromLocal = sessionStorage.getItem("stockKilombo")
-const parfumFromLocal = sessionStorage.getItem("parfumKilombo")
+const userFromLocal = localStorage.getItem("userKilombo")
+const productsFromLocal = localStorage.getItem("productsKilombo")
+const customerFromLocal = localStorage.getItem("customerKilombo")
+const employeeFromKilombo = localStorage.getItem("employeeKilombo")
+const customerInfoFromLocal = localStorage.getItem("customerInfoKilombo")
+const stockFromLocal = localStorage.getItem("stockKilombo")
+const parfumFromLocal = localStorage.getItem("parfumKilombo")
 
 export const initialState = {
     user: JSON.parse(userFromLocal) == null ? undefined : JSON.parse(userFromLocal),

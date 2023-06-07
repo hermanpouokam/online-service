@@ -57,7 +57,7 @@ export default function Login() {
         signInWithEmailAndPassword(auth, user.email, password)
             .then((userCredential) => {
                 const userCred = userCredential.user;
-                sessionStorage.setItem('userKilombo', JSON.stringify(user))
+                localStorage.setItem('userKilombo', JSON.stringify(user))
                 dispatch({
                     type: 'SIGN_IN',
                     user: user

@@ -38,7 +38,7 @@ export default function Navbar() {
                 array.push({ id, ...data })
             });
             if (array.length > 0) {
-                sessionStorage.setItem('productsKilombo', JSON.stringify(array))
+                localStorage.setItem('productsKilombo', JSON.stringify(array))
                 dispatch({
                     type: "SET_PRODUCTS",
                     products: array
@@ -73,12 +73,12 @@ export default function Navbar() {
                     });
 
                 }
-                sessionStorage.setItem('parfumKilombo', JSON.stringify(parfum))
+                localStorage.setItem('parfumKilombo', JSON.stringify(parfum))
                 dispatch({
                     type: "SET_PARFUM",
                     parfum: parfum
                 })
-                sessionStorage.setItem('stockKilombo', JSON.stringify(array))
+                localStorage.setItem('stockKilombo', JSON.stringify(array))
                 dispatch({
                     type: "SET_STOCK",
                     stock: array
@@ -101,7 +101,7 @@ export default function Navbar() {
                     const data = doc.data()
                     customers.push({ id, ...data });
                 });
-                sessionStorage.setItem("customerKilombo", JSON.stringify(customers))
+                localStorage.setItem("customerKilombo", JSON.stringify(customers))
                 dispatch({
                     type: 'ADD_CUSTOMER',
                     customers: customers
@@ -116,7 +116,7 @@ export default function Navbar() {
                     const data = doc.data()
                     employee.push({ id, ...data });
                 });
-                sessionStorage.setItem("employeeKilombo", JSON.stringify(employee))
+                localStorage.setItem("employeeKilombo", JSON.stringify(employee))
                 dispatch({
                     type: 'SET_EMPLOYEE',
                     employees: employee

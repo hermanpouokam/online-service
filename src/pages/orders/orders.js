@@ -44,7 +44,7 @@ export default function Orders() {
     const [value, setValue] = React.useState(null);
     const [inputValue, setInputValue] = React.useState('');
     const [page, setPage] = React.useState(1);
-    const [numberPerPage, setNumberPerPage] = useState(10)
+    const [numberPerPage, setNumberPerPage] = useState(4)
 
     const handleClickOpen = (scrollType) => () => {
         setOpen(true);
@@ -676,7 +676,7 @@ export default function Orders() {
                 type: 'SET_CUSTOMER',
                 customer: customer
             })
-            sessionStorage.setItem('customerInfoKilombo', JSON.stringify({ ...inputsStates, type: 'client divers' }))
+            localStorage.setItem('customerInfoKilombo', JSON.stringify({ ...inputsStates, type: 'client divers' }))
             let location = window.location.href
             window.location.assign(`/orders/neworder?form=order&custom=false&order=true&onafter=${location}`)
         } else {
@@ -684,7 +684,7 @@ export default function Orders() {
                 type: 'SET_CUSTOMER',
                 customer: value
             })
-            sessionStorage.setItem('customerInfoKilombo', JSON.stringify(value))
+            localStorage.setItem('customerInfoKilombo', JSON.stringify(value))
             let location = window.location.href
             window.location.assign(`/orders/neworder?form=order&custom=false&order=true&onafter=${location}`)
         }
@@ -772,7 +772,7 @@ export default function Orders() {
                                                     <tbody>
                                                         {
                                                             invoicesSearch.length > 0 ?
-                                                                invoicesSearch.slice((page == 1 ? 0 : (page)), (page + numberPerPage)).map((item, i) => (
+                                                                invoicesSearch.slice((page - 1) * numberPerPage, page * numberPerPage).map((item, i) => (
                                                                     <InvoiceCard key={i} item={item} i={i} />
                                                                 ))
                                                                 :
@@ -785,7 +785,7 @@ export default function Orders() {
                                         <div class='card-footer'>
                                             <nav aria-label="..." class='float-right'>
                                                 <Pagination
-                                                    count={Math.round(invoicesSearch.length / numberPerPage)}
+                                                    count={Math.ceil(invoicesSearch.length / numberPerPage)}
                                                     variant="outlined"
                                                     page={page}
                                                     color="secondary"
