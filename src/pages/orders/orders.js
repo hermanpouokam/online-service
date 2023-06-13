@@ -8,7 +8,7 @@ import {
     IconButton, InputLabel, List, ListItem, ListItemText, MenuItem, Pagination, Popover, Select, Slide,
     Stack, TextField, Toolbar, Typography
 } from '@mui/material';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useStateValue } from '../../components/stateProvider';
 import { db } from '../../firebase';
 import { collection, deleteDoc, doc, getDocs, orderBy, query, updateDoc } from 'firebase/firestore';
@@ -26,9 +26,12 @@ const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
 });
 
+
 export default function Orders() {
 
     const navigate = useNavigate()
+    const params = useParams()
+
     const [open, setOpen] = React.useState(false);
     const [scroll, setScroll] = React.useState('paper');
     const [{ customer, stock, parfum, employee }, dispatch] = useStateValue()
@@ -43,8 +46,8 @@ export default function Orders() {
     const [invoicesProducts, setInvoicesProducts] = useState([])
     const [value, setValue] = React.useState(null);
     const [inputValue, setInputValue] = React.useState('');
-    const [page, setPage] = React.useState(1);
-    const [numberPerPage, setNumberPerPage] = useState(4)
+    const [page, setPage] = useState(params.id ? params.id : 1);
+    const [numberPerPage, setNumberPerPage] = useState(10)
 
     const handleClickOpen = (scrollType) => () => {
         setOpen(true);
@@ -55,7 +58,7 @@ export default function Orders() {
         setOpen(false);
     };
     const handleChange = (event, value) => {
-        setPage(value);
+        window.location.assign(`orders/page/${value}`)
     };
 
     const descriptionElementRef = React.useRef(null);
@@ -676,7 +679,7 @@ export default function Orders() {
                 type: 'SET_CUSTOMER',
                 customer: customer
             })
-            localStorage.setItem('customerInfoKilombo', JSON.stringify({ ...inputsStates, type: 'client divers' }))
+            sessionStorage.setItem('customerInfoKilombo', JSON.stringify({ ...inputsStates, type: 'client divers' }))
             let location = window.location.href
             window.location.assign(`/orders/neworder?form=order&custom=false&order=true&onafter=${location}`)
         } else {
@@ -684,7 +687,7 @@ export default function Orders() {
                 type: 'SET_CUSTOMER',
                 customer: value
             })
-            localStorage.setItem('customerInfoKilombo', JSON.stringify(value))
+            sessionStorage.setItem('customerInfoKilombo', JSON.stringify(value))
             let location = window.location.href
             window.location.assign(`/orders/neworder?form=order&custom=false&order=true&onafter=${location}`)
         }
@@ -787,7 +790,7 @@ export default function Orders() {
                                                 <Pagination
                                                     count={Math.ceil(invoicesSearch.length / numberPerPage)}
                                                     variant="outlined"
-                                                    page={page}
+                                                    page={parseInt(page)}
                                                     color="secondary"
                                                     onChange={handleChange}
                                                 />

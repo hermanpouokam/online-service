@@ -88,6 +88,10 @@ const router = createBrowserRouter([
     element: <Daily />
   },
   {
+    path: '/dailyclosure/search/:date',
+    element: <Daily />
+  },
+  {
     path: '/users',
     element: <Users />
   },

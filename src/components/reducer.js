@@ -1,10 +1,11 @@
-const userFromLocal = localStorage.getItem("userKilombo")
-const productsFromLocal = localStorage.getItem("productsKilombo")
-const customerFromLocal = localStorage.getItem("customerKilombo")
-const employeeFromKilombo = localStorage.getItem("employeeKilombo")
-const customerInfoFromLocal = localStorage.getItem("customerInfoKilombo")
-const stockFromLocal = localStorage.getItem("stockKilombo")
-const parfumFromLocal = localStorage.getItem("parfumKilombo")
+const userFromLocal = sessionStorage.getItem("userKilombo")
+const productsFromLocal = sessionStorage.getItem("productsKilombo")
+const customerFromLocal = sessionStorage.getItem("customerKilombo")
+const employeeFromKilombo = sessionStorage.getItem("employeeKilombo")
+const customerInfoFromLocal = sessionStorage.getItem("customerInfoKilombo")
+const stockFromLocal = sessionStorage.getItem("stockKilombo")
+const parfumFromLocal = sessionStorage.getItem("parfumKilombo")
+const enterprise = sessionStorage.getItem("enterprise")
 
 export const initialState = {
     user: JSON.parse(userFromLocal) == null ? undefined : JSON.parse(userFromLocal),
@@ -14,6 +15,7 @@ export const initialState = {
     stock: JSON.parse(stockFromLocal) == null ? undefined : JSON.parse(stockFromLocal),
     parfum: JSON.parse(parfumFromLocal) == null ? undefined : JSON.parse(parfumFromLocal),
     customerInfo: JSON.parse(customerInfoFromLocal) == null ? undefined : JSON.parse(customerInfoFromLocal),
+    enterprise: JSON.parse(enterprise) == null ? undefined : JSON.parse(enterprise),
     refresh: false
 }
 
@@ -53,6 +55,11 @@ const reducer = (state, action) => {
             return {
                 ...state,
                 parfum: action.parfum
+            }
+        case 'SET_ENTERPRISE':
+            return {
+                ...state,
+                enterprise: action.payload
             }
         case 'REFRESH':
             return {

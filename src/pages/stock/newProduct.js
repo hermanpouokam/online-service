@@ -146,6 +146,7 @@ export default function NewProduct() {
                     productCode: productCode,
                     categorie: categorie,
                     already: 0,
+                    parfumName: inputsValue.productParfum,
                     stock: parseInt(inputsValue.stockInitial),
                     minStock: inputsValue.minStock != '' ? parseInt(inputsValue.minStock) : 0,
                 }).then(async () => {
@@ -169,6 +170,8 @@ export default function NewProduct() {
                     stock: parseInt(inputsValue.stockInitial),
                     hasParfum: true,
                     already: 0,
+                    nom: inputsValue.product,
+                    categorie,
                     minStock: inputsValue.minStock != '' ? parseInt(inputsValue.minStock) : 0
                 }).then(async () => {
                     await setDoc(doc(db, "parfum", `${productCode}-${inputsValue.productParfum}`), {

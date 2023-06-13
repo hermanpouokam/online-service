@@ -62,11 +62,12 @@ export default function NewIncome() {
         const index = articles.findIndex(
             (item) => item.nom === des.nom
         );
+        console.log(des)
         if (index >= 0) {
             if ((articles[index].qty + qty) > des.stock) {
                 return handleClickAlert('error', 'Erreur', `Vous n'avez pas assez de produit en stock`)
             }
-            setArticles(articles.map(x => (x.id === des.id ? { ...x, qty: x.qty + qty } : x)))
+            setArticles(articles.map(x => (x.nom === des.nom ? { ...x, qty: x.qty + qty } : x)))
         } else {
             if (des.stock < qty) {
                 return handleClickAlert('error', 'Erreur', `Vous n'avez pas assez de produit en stock`)

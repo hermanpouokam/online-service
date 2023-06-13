@@ -9,7 +9,7 @@ import moment from 'moment'
 
 export default function Navbar() {
 
-    const [{ user, refresh }, dispatch] = useStateValue()
+    const [{ user, refresh, enterprise }, dispatch] = useStateValue()
     const [loading, setLoading] = useState(true)
     const navigate = useNavigate()
 
@@ -38,7 +38,7 @@ export default function Navbar() {
                 array.push({ id, ...data })
             });
             if (array.length > 0) {
-                localStorage.setItem('productsKilombo', JSON.stringify(array))
+                sessionStorage.setItem('productsKilombo', JSON.stringify(array))
                 dispatch({
                     type: "SET_PRODUCTS",
                     products: array
@@ -73,12 +73,12 @@ export default function Navbar() {
                     });
 
                 }
-                localStorage.setItem('parfumKilombo', JSON.stringify(parfum))
+                sessionStorage.setItem('parfumKilombo', JSON.stringify(parfum))
                 dispatch({
                     type: "SET_PARFUM",
                     parfum: parfum
                 })
-                localStorage.setItem('stockKilombo', JSON.stringify(array))
+                sessionStorage.setItem('stockKilombo', JSON.stringify(array))
                 dispatch({
                     type: "SET_STOCK",
                     stock: array
@@ -101,12 +101,22 @@ export default function Navbar() {
                     const data = doc.data()
                     customers.push({ id, ...data });
                 });
-                localStorage.setItem("customerKilombo", JSON.stringify(customers))
+                sessionStorage.setItem("customerKilombo", JSON.stringify(customers))
                 dispatch({
                     type: 'ADD_CUSTOMER',
                     customers: customers
                 });
             })
+            const docRef = doc(db, "entreprise", user.enterprise);
+            const docSnap = await getDoc(docRef);
+            if (docSnap.exists()) {
+                const data = docSnap.data()
+                sessionStorage.setItem("enterprise", JSON.stringify(data))
+                dispatch({
+                    type: 'SET_ENTERPRISE',
+                    payload: data
+                });
+            }
 
             const q1 = query(collection(db, "employee"));
             const unsubscribe1 = onSnapshot(q1, (querySnapshot) => {
@@ -116,11 +126,7 @@ export default function Navbar() {
                     const data = doc.data()
                     employee.push({ id, ...data });
                 });
-                localStorage.setItem("employeeKilombo", JSON.stringify(employee))
-                dispatch({
-                    type: 'SET_EMPLOYEE',
-                    employees: employee
-                });
+                sessionStorage.setItem("employeeKilombo", JSON.stringify(employee))
             })
 
             dispatch({
@@ -141,28 +147,63 @@ export default function Navbar() {
     }
 
     useEffect(() => {
-        
+
         const startDay = async () => {
             const docRef = doc(db, "dailyclosure", moment().format('DDMMYYYY'));
             const docSnap = await getDoc(docRef);
             if (docSnap.exists()) {
+                const check = async () => {
+                    let stock = []
+                    const q = query(collection(db, "stock"));
+                    const querySnapshot = await getDocs(q);
+                    querySnapshot.forEach((doc) => {
+                        const data = doc.data()
+                        const id = doc.id
+                        stock.push({ id, ...data })
+                    });
+
+                    let dailyStock = []
+                    const subColRef = collection(db, "dailyclosure", moment().format('DDMMYYYY'), 'dailyStock');
+                    const qSnap = await getDocs(subColRef)
+                    dailyStock = qSnap.docs.map(d => ({ id: d.id, ...d.data() }))
+
+                    const uniqueResultArrayObjOne = stock.filter(function (objOne) {
+                        return !dailyStock.some(function (objTwo) {
+                            return objOne.id == objTwo.id;
+                        });
+                    });
+                    uniqueResultArrayObjOne.forEach(async function (docData) {
+                        await setDoc(doc(db, `dailyclosure`, `${moment().format('DDMMYYYY')}`, `dailyStock`, `${docData.id}`,), {
+                            stock: docData.stock,
+                            appro: 0,
+                            finalStock: 0
+                        });
+                    })
+
+                }
+                check()
                 return setLoading(false)
             }
             await setDoc(doc(db, "dailyclosure", moment().format('DDMMYYYY')), {
                 createdAt: serverTimestamp(),
                 closed: false,
-                caisse: 0
+                caisse: parseInt(enterprise.caisse),
+                marge: 0,
+                depense: 0
             });
             const q = query(collection(db, "stock"));
             const querySnapshot = await getDocs(q);
             let array = []
-            querySnapshot.forEach((doc) => {
-                const data = doc.data()
-                const id = doc.id
-                
+            querySnapshot.forEach(async function (docData) {
+                const data = docData.data()
+                const id = docData.id
+                await setDoc(doc(db, `dailyclosure`, `${moment().format('DDMMYYYY')}`, `dailyStock`, `${id}`,), {
+                    stock: data.stock,
+                    appro: 0,
+                    finalStock: 0
+                });
             });
         }
-
         return () => {
             startDay()
             setLoading(false)
