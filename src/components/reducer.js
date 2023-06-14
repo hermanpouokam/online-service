@@ -66,6 +66,11 @@ const reducer = (state, action) => {
                 ...state,
                 refresh: action.payload
             }
+        case 'SET_USER':
+            return {
+                ...state,
+                user: action.user
+            }
         case 'SIGN_OUT':
             return {
                 ...state,

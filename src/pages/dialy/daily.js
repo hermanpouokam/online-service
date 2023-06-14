@@ -47,6 +47,15 @@ export default function Daily() {
         setOpenDatePicker(true);
     };
 
+    useEffect(() => {
+
+        if (!date) {
+            alert('Mauvais format de date')
+            return window.location.assign('/dailyclosure')
+        }
+    }, [params.date])
+
+
     const handleClickAlert = (variant, title, msg) => {
         setOpenSnack(true);
         setStates({
@@ -126,6 +135,13 @@ export default function Daily() {
                         });
                         for (let i = 0; i < arrayProducts.length; i++) {
                             const element = arrayProducts[i];
+                            if (element.parfum !== null) {
+                                const docRef = doc(db, "parfum", `${element.productId}-${element.parfum}`);
+                                await updateDoc(docRef, {
+                                    stock: increment(element.qty),
+                                    already: increment(-element.qty)
+                                });
+                            }
                             const docRef = doc(db, "stock", element.productId);
                             await updateDoc(docRef, {
                                 stock: increment(element.qty),
@@ -137,11 +153,20 @@ export default function Daily() {
                     });
                 })
 
-                stock.forEach(async function (el) {
+                const q = query(collection(db, "stock"));
+                const querySnapshot = await getDocs(q);
+                let arrayStock = []
+                querySnapshot.forEach(async (docData) => {
+                    const data = docData.data()
+                    const id = docData.id
+                    arrayStock.push({ id, ...data })
+                });
+                arrayStock.forEach(async function (el) {
                     await updateDoc(doc(db, `dailyclosure`, `${moment().format('DDMMYYYY')}`, `dailyStock`, `${el.id}`,), {
                         finalStock: el.stock
                     });
                 })
+
             } else {
                 console.log('document do not exist')
             }
@@ -215,10 +240,10 @@ export default function Daily() {
                 'number': dailyOrders?.map((_, i) => { return _.amountToPaid }).reduce((acc, currentValue) => acc + currentValue, 0) + sellers?.filter(el => el.closed == true).map((_, i) => { return _.toPaid }).reduce((acc, currentValue) => acc + currentValue, 0),
                 'lastUpdated': '',
                 'numberColor': 'red',
-                'increase': ((dailyOrders?.map((_, i) => { return _.paid }).reduce((acc, currentValue) => acc + currentValue, 0) -
-                    prevOrder?.map((_, i) => { return _.paid }).reduce((acc, currentValue) => acc + currentValue, 0)) /
-                    (prevOrder?.map((_, i) => { return _.paid }).reduce((acc, currentValue) => acc + currentValue, 0) === 0 ? 1 :
-                        prevOrder?.map((_, i) => { return _.paid }).reduce((acc, currentValue) => acc + currentValue, 0))) * 100
+                'increase': ((dailyOrders?.map((_, i) => { return _.amountToPaid }).reduce((acc, currentValue) => acc + currentValue, 0) -
+                    prevOrder?.map((_, i) => { return _.amountToPaid }).reduce((acc, currentValue) => acc + currentValue, 0)) /
+                    (prevOrder?.map((_, i) => { return _.amountToPaid }).reduce((acc, currentValue) => acc + currentValue, 0) === 0 ? 1 :
+                        prevOrder?.map((_, i) => { return _.amountToPaid }).reduce((acc, currentValue) => acc + currentValue, 0))) * 100
             },
             {
                 'id': '2',
@@ -357,7 +382,6 @@ export default function Daily() {
                         open={openDatePicker}
                         TransitionComponent={Transition}
                         keepMounted
-                        onClose={handleCloseDatePicker}
                         aria-describedby="alert-dialog-slide-description"
                     >
                         <DialogTitle>{"Voullez-vous vraiment cloturer la journée ?"}</DialogTitle>
@@ -431,10 +455,10 @@ export default function Daily() {
                                                     {_?.appro}
                                                 </td>
                                                 <td class='text-right'>
-                                                    {dailyDoc.closed == false ? 'en attente...' : _?.finalStock}
+                                                    {dailyDoc.closed == false ? 'en attente...' : Math.abs(_?.finalStock - _.stock + _?.appro)}
                                                 </td>
                                                 <td class='text-right'>
-                                                    {dailyDoc.closed == false ? 'en attente...' : _.stock - _?.finalStock}
+                                                    {dailyDoc.closed == false ? 'en attente...' : _?.finalStock}
                                                 </td>
                                             </tr>
                                         ))
@@ -480,6 +504,7 @@ export default function Daily() {
                                         </div>
                                     </div>
                                 </div>
+
                                 <div class="row">
                                     {
                                         dash.map((item, index) => (
@@ -547,10 +572,10 @@ export default function Daily() {
                                                                             {_?.appro}
                                                                         </td>
                                                                         <td class='text-right'>
-                                                                            {dailyDoc.closed == false ? 'en attente...' : _?.finalStock}
+                                                                            {dailyDoc.closed == false ? 'en attente...' : Math.abs(_?.finalStock - _.stock + _?.appro)}
                                                                         </td>
                                                                         <td class='text-right'>
-                                                                            {dailyDoc.closed == false ? 'en attente...' : _.stock - _?.finalStock}
+                                                                            {dailyDoc.closed == false ? 'en attente...' : _?.finalStock}
                                                                         </td>
                                                                     </tr>
                                                                 ))
@@ -594,7 +619,7 @@ export default function Daily() {
 
                                                     }
                                                     {
-                                                        dailyOrders.filter(el => el.delivered == false)?.reduce((accumulator, currentValue) => accumulator + currentValue.amountToPaid, 0) > 0 &&
+                                                        dailyOrders.filter(el => el.delivered == true && el.deliverer == 'aucun')?.reduce((accumulator, currentValue) => accumulator + currentValue.amountToPaid, 0) > 0 &&
                                                         <li class="media hoverable" >
                                                             <img alt="image" src={'https://firebasestorage.googleapis.com/v0/b/kilombo-f0e07.appspot.com/o/user.png?alt=media&token=82fd2c11-a8cf-4da6-9ef9-d7422bb27292&_gl=1*1t1hyjk*_ga*MzU1MTQ2MzgxLjE2NjI4Mzc4ODE.*_ga_CW55HF8NVT*MTY4NjI4NTc2MC45My4xLjE2ODYyOTE4MDMuMC4wLjA.'}
                                                                 class="mr-3 user-img-radious-style user-list-img" />
@@ -602,7 +627,7 @@ export default function Daily() {
                                                                 <div class="mt-0 font-weight-bold">Magasin</div>
                                                                 <div class="text-small">
                                                                     {
-                                                                        (dailyOrders.filter(el => el.delivered == false)?.reduce((accumulator, currentValue) => accumulator + currentValue.amountToPaid, 0))
+                                                                        (dailyOrders.filter(el => el.delivered == true && el.deliverer == 'aucun')?.reduce((accumulator, currentValue) => accumulator + currentValue.amountToPaid, 0))
                                                                     }FCFA
                                                                 </div>
                                                             </div>
@@ -652,7 +677,12 @@ export default function Daily() {
                                                                                     {moment(_.createdAt).format("DD-MM-YYYY • HH:mm")}
                                                                                 </td>
                                                                                 <td class='text-bold text-uppercase'>
-                                                                                    {employee.find(el => el.id === _.deliverer)?.name}
+                                                                                    {
+                                                                                        _.deliverer !== 'aucun' ?
+                                                                                            employee.find(el => el.id === _.deliverer)?.name
+                                                                                            :
+                                                                                            'none'
+                                                                                    }
                                                                                 </td>
                                                                                 <td class='text-center'>
                                                                                     {

@@ -130,7 +130,8 @@ export default function NewIncome() {
                 });
                 productRef = doc(db, 'parfum', `${el.id}-${el.productParfum}`)
                 await updateDoc(productRef, {
-                    stock: el.stock - el.qty
+                    stock: el.stock - el.qty,
+                    already: el.already + el.qty
                 });
             } else {
                 const productRef = doc(db, "stock", el.id);

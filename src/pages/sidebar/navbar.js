@@ -13,19 +13,24 @@ export default function Navbar() {
     const [loading, setLoading] = useState(true)
     const navigate = useNavigate()
 
-    useEffect(() => {
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-
-            } else {
-                dispatch({
-                    type: 'SIGN_OUT',
-                    user: null
-                })
-                window.location.assign('/auth/login')
-            }
-        });
-    }, [user])
+    // useEffect(() => {
+    //     onAuthStateChanged(auth, (user) => {
+    //         if (user) {
+    //             console.log(user)
+    //             dispatch({
+    //                 type: 'SIGN_OUT',
+    //                 user: user
+    //             })
+    //         } else {
+    //             console.log(user)
+    //             dispatch({
+    //                 type: 'SIGN_OUT',
+    //                 user: null
+    //             })
+    //             window.location.assign('/auth/login')
+    //         }
+    //     });
+    // }, [user])
 
     useEffect(() =>
         async () => {
@@ -84,7 +89,6 @@ export default function Navbar() {
                     stock: array
                 })
             }
-
             dispatch({
                 type: 'REFRESH',
                 payload: false
@@ -139,7 +143,7 @@ export default function Navbar() {
         signOut(auth).then(() => {
             sessionStorage.clear()
             dispatch({
-                type: 'SIGN_OUT',
+                type: 'SET_USER',
                 user: null
             })
             window.location.assign('/auth/login')
