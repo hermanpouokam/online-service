@@ -624,7 +624,7 @@ export default function Daily() {
                                                             <img alt="image" src={'https://firebasestorage.googleapis.com/v0/b/kilombo-f0e07.appspot.com/o/user.png?alt=media&token=82fd2c11-a8cf-4da6-9ef9-d7422bb27292&_gl=1*1t1hyjk*_ga*MzU1MTQ2MzgxLjE2NjI4Mzc4ODE.*_ga_CW55HF8NVT*MTY4NjI4NTc2MC45My4xLjE2ODYyOTE4MDMuMC4wLjA.'}
                                                                 class="mr-3 user-img-radious-style user-list-img" />
                                                             <div class="media-body">
-                                                                <div class="mt-0 font-weight-bold">Magasin</div>
+                                                                <div class="mt-0 font-weight-bold text-uppercase">Magasin</div>
                                                                 <div class="text-small">
                                                                     {
                                                                         (dailyOrders.filter(el => el.delivered == true && el.deliverer == 'aucun')?.reduce((accumulator, currentValue) => accumulator + currentValue.amountToPaid, 0))
@@ -653,6 +653,7 @@ export default function Daily() {
                                                                 <th >N° de facture</th>
                                                                 <th class=''>Client</th>
                                                                 <th >Montant</th>
+                                                                <th>Marge directe</th>
                                                                 <th>Date</th>
                                                                 <th>Livreur</th>
                                                                 <th class='text-center'>Statut</th>
@@ -672,6 +673,9 @@ export default function Daily() {
                                                                                 <td class='text-bold text-uppercase'><strong>{_.customerName}</strong></td>
                                                                                 <td >
                                                                                     <strong>{_.amountToPaid}</strong>
+                                                                                </td>
+                                                                                <td >
+                                                                                    <strong>{_.directProfit}</strong>
                                                                                 </td>
                                                                                 <td>
                                                                                     {moment(_.createdAt).format("DD-MM-YYYY • HH:mm")}

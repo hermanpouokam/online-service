@@ -11,7 +11,7 @@ import {
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useStateValue } from '../../components/stateProvider';
 import { db } from '../../firebase';
-import { collection, deleteDoc, doc, getDocs, orderBy, query, updateDoc } from 'firebase/firestore';
+import { collection, deleteDoc, doc, getDocs, increment, orderBy, query, updateDoc } from 'firebase/firestore';
 import moment from 'moment/moment';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import { CheckOutlined, ClearOutlined, RemoveCircleOutline } from '@mui/icons-material';
@@ -21,6 +21,7 @@ import { DataGrid } from '@mui/x-data-grid';
 import { onlyNumberTest } from '../../components/functions/regex';
 import CurrencyFormat from 'react-currency-format';
 import FilterListIcon from '@mui/icons-material/FilterList';
+import HistoryIcon from '@mui/icons-material/History';
 
 const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
@@ -34,7 +35,7 @@ export default function Orders() {
 
     const [open, setOpen] = React.useState(false);
     const [scroll, setScroll] = React.useState('paper');
-    const [{ customer, stock, parfum, employee }, dispatch] = useStateValue()
+    const [{ customer, stock, parfum, employee, user }, dispatch] = useStateValue()
     const [inputsStates, setInputsStates] = useState({
         nom: '',
         numero: '',
@@ -58,7 +59,13 @@ export default function Orders() {
         setOpen(false);
     };
     const handleChange = (event, value) => {
-        window.location.assign(`orders/page/${value}`)
+        const splitedUrl = window.location.href.split('?')
+
+        if (splitedUrl[1]) {
+            window.location.assign(`orders/page/${value}?${splitedUrl[1]}`)
+        } else {
+            window.location.assign(`orders/page/${value}`)
+        }
     };
 
     const descriptionElementRef = React.useRef(null);
@@ -75,7 +82,7 @@ export default function Orders() {
         const popoverOpened = Boolean(anchorEl);
         const id = open ? 'simple-popover' : undefined;
         const [rowSelectionModel, setRowSelectionModel] = React.useState([])
-
+        const [load, setLoad] = useState(false)
         const [open1, setOpen1] = React.useState(false);
 
         const handleClickOpen1 = () => {
@@ -222,15 +229,29 @@ export default function Orders() {
         }
 
         let arrayProduct = invoicesProducts.filter(el => el.invoiceNum == item.invoiceNum);
+
         const handleClickReceipt = async () => {
-            let invoiceProductRef = doc(db, "invoices", item.id);
-            await updateDoc(invoiceProductRef, {
-                amountToPaid: productOfArray(arrayProduct),
-                paid: allPaid,
-                deliverer,
-                delivered: true
-            });
-            window.location.reload()
+            setLoad(true)
+            try {
+                let invoiceProductRef = doc(db, "invoices", item.id);
+                await updateDoc(doc(db, `dailyclosure`, `${moment().format('DDMMYYYY')}`), {
+                    marge: increment(item.directProfit),
+                    caisse: increment(pendingPaid),
+                });
+                await updateDoc(doc(db, `entreprise`, user.enterprise), {
+                    caisse: increment(pendingPaid),
+                });
+                await updateDoc(invoiceProductRef, {
+                    amountToPaid: productOfArray(arrayProduct),
+                    paid: parseInt(allPaid),
+                    deliverer,
+                    delivered: true
+                });
+                window.location.reload()
+            } catch (error) {
+                setLoad(false)
+                console.log(error)
+            }
         }
 
 
@@ -371,7 +392,7 @@ export default function Orders() {
                                                 <ListItemText primary={`aucun`} />
                                             </ListItem>
                                             {
-                                                employee.filter(it => it.job === 'driver').map((el) => (
+                                                employee.filter(it => it.job === 'driver' && it.cat == '1').map((el) => (
                                                     <ListItem
                                                         key={value}
                                                         role="listitem"
@@ -512,15 +533,23 @@ export default function Orders() {
                 <th scope="row">{item.invoiceNum}</th>
                 <th class='text-capitalize'>{item.customerId == 'client divers' ? item.customerName : customer.find(el => el.id == item.customerId).nom}</th>
                 <td>{productOfArray(arrayProduct)}</td>
-                <td>{moment(item.createdAt.toDate()).format("DD-MM-YYYY • HH:mm")}</td>
+                <td>{moment(item.createdAt).format("DD-MM-YYYY • HH:mm")}</td>
+                <td>{item.directProfit}</td>
                 <td scope="col" >
                     {
                         item.delivered ?
-                            <Chip
-                                label='Livreé'
-                                color='success'
-                                size='small'
-                            />
+                            item.amountToPaid == item.paid ?
+                                <Chip
+                                    label='Livrée'
+                                    color='success'
+                                    size='small'
+                                />
+                                :
+                                <Chip
+                                    label={`Livrée (reste:${item.amountToPaid - item.paid})`}
+                                    color='error'
+                                    size='small'
+                                />
                             :
                             <Chip
                                 label='Non Livrée'
@@ -576,7 +605,7 @@ export default function Orders() {
 
                                                 <MenuItem value={'aucun'}>aucun</MenuItem>
                                                 {
-                                                    employee.filter(it => it.job === 'driver').map((el) => (
+                                                    employee.filter(it => it.job === 'driver' && it.cat == '1').map((el) => (
                                                         <MenuItem value={el.id}>{el.surname}</MenuItem>
                                                     ))
                                                 }
@@ -588,7 +617,7 @@ export default function Orders() {
                                             autoFocus
                                             onChange={(e) => {
                                                 if (onlyNumberTest(e.target.value)) {
-                                                    setPendingPaid(e.target.value)
+                                                    setAllPaid(e.target.value)
                                                 }
                                             }}
                                             margin="dense"
@@ -596,7 +625,7 @@ export default function Orders() {
                                             id="outlined-basic"
                                             label="Avance de paiement"
                                             variant="outlined"
-                                            value={pendingPaid}
+                                            value={allPaid}
                                         />
                                     </DialogContent>
                                     <DialogActions>
@@ -641,10 +670,17 @@ export default function Orders() {
             querySnapshot.forEach((doc) => {
                 const data = doc.data()
                 const id = doc.id
-                array.push({ id, ...data })
+                const createdAt = moment(data.createdAt.toDate()).format()
+                array.push({ id, ...data, createdAt })
             });
-            setInvoices(array)
-            setInvoicesSearch(array)
+            const splitedUrl = window.location.href.split('?')
+            if (splitedUrl[1]) {
+                setInvoices(array)
+                setInvoicesSearch(array)
+            } else {
+                setInvoices(array.filter((obj) => moment(obj.createdAt).format('YYYY-MM-DD') === moment().format('YYYY-MM-DD')))
+                setInvoicesSearch(array.filter((obj) => moment(obj.createdAt).format('YYYY-MM-DD') === moment().format('YYYY-MM-DD')))
+            }
         }, [])
 
     React.useEffect(() => {
@@ -716,8 +752,11 @@ export default function Orders() {
                                         <div class="card-header">
                                             <h4>Gestion de factures</h4>
                                             <div class="card-header-action d-flex">
-                                                <Link onClick={handleClickOpen('paper')} data-toggle="tooltip" data-placement="top" title='Nouvelle facture'
-                                                    class="btn btn-icon btn-success ml-sm-2"><i class="fas fa-plus"></i></Link>
+                                                <IconButton href='orders?q=all&type=1&filter=all' color='info' aria-label="delete">
+                                                    <HistoryIcon />
+                                                </IconButton>
+                                                <IconButton variant='contained' onClick={handleClickOpen('paper')} data-toggle="tooltip" data-placement="top" title='Nouvelle facture'
+                                                    class="btn btn-icon btn-success ml-sm-2"><i class="fas fa-plus"></i></IconButton>
                                             </div>
                                         </div>
                                     </div>
@@ -744,13 +783,28 @@ export default function Orders() {
                                                     </IconButton>
                                                     <div class="dropdown-menu">
                                                         {
-                                                            ['tout', 'non livrée', 'livrée'].map((el) => (
-                                                                <Link href="#"
-                                                                    style={filter == el ? { background: '#dff9fb' } : {}}
-                                                                    onClick={() => handleChangeFilter(el)}
-                                                                    class="dropdown-item text-capitalize has-icon"
-                                                                >{el}</Link>
-                                                            ))
+                                                            
+                                                            ['tout', 'non livrée', 'Avancée', 'livrée'].map((el, i) => {
+                                                                if (window.location.href.split('?')[1]) {
+                                                                    return (
+
+                                                                        <Link href="#"
+                                                                            style={filter == el ? { background: '#dff9fb' } : {}
+                                                                            }
+                                                                            onClick={() => handleChangeFilter(el)}
+                                                                            class="dropdown-item text-capitalize has-icon"
+                                                                        >{el}</Link>
+                                                                    )
+                                                                } else {
+                                                                    return (
+                                                                        <Link href="#"
+                                                                            style={filter == el ? { background: '#dff9fb' } : {}}
+                                                                            onClick={() => handleChangeFilter(el)}
+                                                                            class="dropdown-item text-capitalize has-icon"
+                                                                        >{el}</Link>
+                                                                    )
+                                                                }
+                                                            })
 
                                                         }
 
@@ -760,7 +814,7 @@ export default function Orders() {
                                         </div>
                                         <div class="card-body">
                                             <div class="table-responsive">
-                                                <table class="table table-striped table-md table-hover" id="save-stage">
+                                                <table class="table table-striped table-dark table-md table-hover" id="save-stage">
                                                     <thead>
                                                         <tr>
                                                             <th scope="col">#</th>
@@ -768,6 +822,7 @@ export default function Orders() {
                                                             <th scope="col">Client</th>
                                                             <th scope="col"> Montant(FCFA)</th>
                                                             <th scope="col">Date</th>
+                                                            <th scope="col">Marge directe</th>
                                                             <th scope="col">Statut</th>
                                                             <th scope="col" class='text-center'>Actions</th>
                                                         </tr>
@@ -889,7 +944,7 @@ export default function Orders() {
                         <Settings />
                     </div>
                 </div>
-            </div>
-        </div>
+            </div >
+        </div >
     )
 }

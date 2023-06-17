@@ -146,30 +146,23 @@ export default function NewIncome() {
             customerId: customerInfo.type ? customerInfo.type : customerInfo.id,
             customerName: customerInfo.nom,
             createdAt: serverTimestamp(),
-            delivered: false
+            delivered: false,
+            directProfit: articles.reduce((acc, val) => {
+                const product = products.find(el => el.id === val.id);
+                return acc + ((val.pu - product.pu) * val.qty)
+            }, 0)
         });
         articles.forEach(async (el) => {
-            if (el.hasParfum) {
-                const docRefProducts = await addDoc(collection(db, "invoicesProduct"), {
-                    invoiceId: docRef.id,
-                    productId: el.id,
-                    nom: el.nom,
-                    parfum: el.productParfum,
-                    qty: el.qty,
-                    price: el.pu,
-                    invoiceNum: invoiceNum
-                });
-            } else {
-                const docRefProducts = await addDoc(collection(db, "invoicesProduct"), {
-                    invoiceId: docRef.id,
-                    productId: el.id,
-                    nom: el.nom,
-                    parfum: null,
-                    qty: el.qty,
-                    price: el.pu,
-                    invoiceNum: invoiceNum
-                });
-            }
+            const docRefProducts = await addDoc(collection(db, "invoicesProduct"), {
+                invoiceId: docRef.id,
+                productId: el.id,
+                nom: el.nom,
+                parfum: el.hasParfum ? el.productParfum : null,
+                qty: el.qty,
+                price: el.pu,
+                invoiceNum: invoiceNum
+            });
+            console.log(docRefProducts.id, 'added successfully')
         })
 
         dispatch({
