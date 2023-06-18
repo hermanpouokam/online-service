@@ -1,19 +1,56 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Sidebar from '../sidebar/sidebar'
 import Settings from '../settings/settings'
-import CustomInput from './customInput'
-import { stock } from '../../database'
+import ProductCard from './productCard'
+import { styled } from '@mui/material/styles';
+import { Grid, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Paper, Typography } from '@mui/material'
+import RadioButtonCheckedIcon from '@mui/icons-material/RadioButtonChecked';
+import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked';
+import { useStateValue } from '../../components/stateProvider'
 
 export default function NewStock() {
 
 
+    const StyledPaper = styled(Paper)(({ theme }) => ({
+        backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
+        ...theme.typography.body2,
+        padding: theme.spacing(1),
+        height: '100%',
+        maxWidth: 350,
+        color: theme.palette.text.primary,
+    }));
+
+    const [{ stock, products }, dispatch] = useStateValue()
+
+    const suppliers = [
+        {
+            'id': 'sp',
+            'def': 'Source du Pays'
+        },
+        {
+            'id': 'sabc',
+            'def': 'Brasseries du cameroun'
+        },
+        {
+            'id': 'ucb',
+            'def': 'Union Camerounaise des Brasseries'
+        },
+        {
+            'id': 'CCGBC',
+            'def': 'Coca Cola Gracedom Bottling Company'
+        },
+
+    ]
+    
     const [step, setStep] = useState(1)
     const [inputsValues, setInputValues] = useState({})
     const [loading, setLoading] = useState(false)
-    const [data, setData] = useState(stock)
+    const [data, setData] = useState([])
+    const [supplier, setSupplier] = useState(suppliers[0])
+    const [render, setRender] = useState(1)
 
     useEffect(() => {
-        document.title = 'Online service - Nouvel approvisionement'
+        document.title = 'Nouvel approvisionement'
     }, [])
 
     useEffect(() => {
@@ -25,14 +62,48 @@ export default function NewStock() {
         })
     }, [])
 
-    const handleChange = (e) => {
-        console.log(e.target.name);
-        console.log(e.target.value);
-        console.log(inputsValues);
+    const handleClickSupplier = (element) => {
+        setSupplier(element)
     }
 
 
+    const SuppliersCard = () => {
 
+        return (
+            <StyledPaper>
+                <div class='card-header'>
+                    <Typography component='h5' variant='h6' noWrap>Choisissez un fournisseur</Typography>
+                </div>
+                <div class='card-body'>
+                    <List
+                        sx={{
+                            width: '100%',
+                            bgcolor: 'background.paper',
+                            position: 'relative',
+                            overflow: 'auto',
+                            maxHeight: '74vh',
+                            '& ul': { padding: 0 },
+                        }}
+                        aria-label="contacts"
+                    >
+                        {
+                            suppliers.map(element => (
+                                <ListItem disablePadding>
+                                    <ListItemButton onClick={() => handleClickSupplier(element)}>
+                                        <ListItemIcon>
+                                            {supplier?.id !== element.id ? <RadioButtonUncheckedIcon /> : <RadioButtonCheckedIcon />}
+                                        </ListItemIcon>
+                                        <ListItemText primary={element.id.toUpperCase()} secondary={<Typography noWrap>{element.def}</Typography>} />
+                                    </ListItemButton>
+                                </ListItem>
+                            ))
+                        }
+
+                    </List>
+                </div>
+            </StyledPaper>
+        )
+    }
 
     return (
         <div>
@@ -44,79 +115,31 @@ export default function NewStock() {
                     <div class="main-content">
                         <section class="section">
                             <div class="section-body">
-                                <div class='d-flex justify-content-center align-items-center'>
-                                    <div style={{ padding: 0 }} class='card col-lg-12  col-md-12 col-sm-12'>
-                                        <div class='row-supply'>
-                                            <div class={`state state-1  ${step == 2 && 'deactive'}`}>
-                                                <div class='card-header'>
-                                                    <h4 class='text-center'>
-                                                        Choisissez le fournisseur
-                                                    </h4>
-                                                </div>
-                                                <div class='card-body row'>
-                                                    {[...Array(4).fill(0)].map((_, i) => (
-                                                        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12">
-                                                            <div onClick={() => setTimeout(() => {
-                                                                setStep(2)
-                                                            }, 500)} class={`scalable card ${i == 0 ? 'l-bg-cyan' : i == 1 ? 'l-bg-red-dark' : i == 2 ? 'l-bg-orange-dark' : 'l-bg-yellow'} `}>
-                                                                <div class="card-statistic-3">
-                                                                    <div class="card-icon card-icon-large"><i class="fa fa-box"></i></div>
-                                                                    <div class="card-content">
-                                                                        <h4 class="card-title text-capitalize">
-                                                                            {
-                                                                                i == 0 ? 'Source Du pays'
-                                                                                    : i == 1 ? 'S.A.B.C'
-                                                                                        : i == 2 ? 'U.C.B'
-                                                                                            : 'En attente...'
-                                                                            }
-                                                                        </h4>
-                                                                        <span>524</span>
+                                <div class='card'>
+                                    <Grid container spacing={1}>
 
-                                                                        <p class="mb-0 text-sm">
-                                                                            <span class="mr-2"><i class="fa fa-arrow-up"></i> 10%</span>
-                                                                            <span class="text-nowrap">Since last month</span>
-                                                                        </p>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    ))}
-                                                </div>
-                                            </div>
-                                            <div class={`state state-2   ${step == 2 && 'active'}`}>
-                                                <div class='card-header'>
-                                                    <h4 class='text-center'>
-                                                        Entrez les articles
-                                                    </h4>
-                                                    <div class='card-header-action'>
-                                                        <button onClick={() => {
-                                                            setTimeout(() => {
-                                                                setStep(1)
-                                                            }, 500);
-                                                        }} class="btn btn-icon text-primary btn-danger icon-left mr-sm-1"><i class="fas fa-times"></i> Annuler</button>
-                                                        <button class="btn btn-icon text-primary btn-success icon-left mr-sm-1"><i class="fa fa-check"></i> Terminer</button>
-                                                    </div>
-                                                </div>
-                                                <div class='card-body d-flex justify-content-center align-items-center'>
-                                                    <form class='form-inline'>
-                                                        {data.map((val, i) => (
-                                                            <CustomInput
-                                                                onChange={handleChange}
-                                                                name={val.item}
-                                                            />
-                                                        ))}
-                                                    </form>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
+                                        <Grid item sm={12} wrap='nowrap' md={4} lg={3}>
+                                            <SuppliersCard />
+                                        </Grid>
+                                        <Grid item sm={12} md={8} lg={9}>
+                                            {
+                                                !loading ?
+                                                    !supplier ?
+                                                        <span>Selectionnez un fournisseur</span>
+                                                        :
+                                                        <ProductCard supplier={supplier} />
+                                                    :
+                                                    <span>Veuillez patienter...</span>
+                                            }
+                                        </Grid>
+                                    </Grid>
                                 </div>
                             </div>
                         </section>
                         <Settings />
                     </div>
                 </div>
-            </div >
-        </div >
+            </div>
+        </div>
     )
 }

@@ -13,24 +13,23 @@ export default function Navbar() {
     const [loading, setLoading] = useState(true)
     const navigate = useNavigate()
 
-    // useEffect(() => {
-    //     onAuthStateChanged(auth, (user) => {
-    //         if (user) {
-    //             console.log(user)
-    //             dispatch({
-    //                 type: 'SIGN_OUT',
-    //                 user: user
-    //             })
-    //         } else {
-    //             console.log(user)
-    //             dispatch({
-    //                 type: 'SIGN_OUT',
-    //                 user: null
-    //             })
-    //             window.location.assign('/auth/login')
-    //         }
-    //     });
-    // }, [user])
+    useEffect(() => {
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                dispatch({
+                    type: 'SIGN_OUT',
+                    user: user
+                })
+            } else {
+                console.log(user)
+                dispatch({
+                    type: 'SIGN_OUT',
+                    user: null
+                })
+                window.location.assign('/auth/login')
+            }
+        });
+    }, [user])
 
     useEffect(() =>
         async () => {

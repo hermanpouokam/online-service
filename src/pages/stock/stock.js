@@ -1,13 +1,30 @@
-import React, { useEffect } from 'react'
-import { useLocation } from 'react-router-dom'
+import React, { useEffect, useState } from 'react'
+import { Link, useLocation, useParams } from 'react-router-dom'
 import Settings from '../settings/settings'
 import Sidebar from '../sidebar/sidebar'
-import { stock } from '../../database'
+import { useStateValue } from '../../components/stateProvider'
+import { Divider } from '@mui/material'
 
 export default function Stock() {
 
+    const params = useParams()
+
+    const [{ stock, products, parfum }, dispatch] = useStateValue()
+
+    const [stocks, setStocks] = useState(stock)
+
     useEffect(() => {
-        document.title = 'Online service - stock'
+        if (params.category && params.category !== 'All') {
+            const supplier = products.filter(el => el.fournisseur == params.category.toLowerCase()).map(el => { return el.id })
+            setStocks(stock.filter(product => supplier.includes(product.id)))
+        } else if (params.category && params.category == 'All') {
+            setStocks(stock)
+        }
+    }, [])
+
+
+    useEffect(() => {
+        document.title = 'Stock'
     }, [])
 
     return (
@@ -45,10 +62,14 @@ export default function Stock() {
                                         <div class='float-left'>
                                             <nav aria-label="breadcrumb">
                                                 <ol class="breadcrumb bg-primary text-white-all">
-                                                    <li class="breadcrumb-item active" aria-current="page">Tous les produits</li>
-                                                    <li class="breadcrumb-item"><a href="#"> Source Du Pays</a></li>
-                                                    <li class="breadcrumb-item"><a href="#"> Brasserie</a></li>
-                                                    <li class="breadcrumb-item"><a href="#"> UCB</a></li>
+                                                    {
+                                                        ['All', 'SP', 'SABC', 'UCB', 'CCGBC'].map((el, i) => (
+
+                                                            <li class={`breadcrumb-item ${params.category == el && 'active'}`} aria-current="page">
+                                                                <a href={`stock/category/${el}`}>{i == 0 ? 'Tous les produits' : el}</a>
+                                                            </li>
+                                                        ))
+                                                    }
                                                 </ol>
                                             </nav>
                                         </div>
@@ -56,19 +77,19 @@ export default function Stock() {
                                 </div>
                                 <div class="row">
                                     {
-                                        stock.length > 0 ?
-                                            stock.map((item, i) => (
+                                        stocks.length > 0 ?
+                                            stocks.map((item, i) => (
                                                 <div div class="col-xl-3 col-md-6 col-lg-6" key={i} >
                                                     <div style={{ cursor: 'pointer' }} class="card" data-toggle="modal" data-target={`#exampleModalCenter${item.id}`}>
                                                         <div class="card-body card-type-3">
-                                                            <div class='card-title font-weight-bold text-center' style={{ fontSize: 16, textTransform: 'capitalize' }}>{item.item}</div>
+                                                            <div class='card-title font-weight-bold text-center' style={{ fontSize: 16, textTransform: 'capitalize' }}>{item.nom}</div>
                                                             <div class="row">
                                                                 <div class='text-bold col-5'>Qte</div>
-                                                                <div class="mb-0 text-bold ml-1 text-success text-right col-6">{item.in}</div>
+                                                                <div class="mb-0 text-bold ml-1 text-success text-right col-6">{item.stock}</div>
                                                             </div>
                                                             <div class="row">
                                                                 <div class='text-bold col-5'>P.U</div>
-                                                                <div class="mb-0 text-bold ml-1 text-dark text-right col-6">{item.price}</div>
+                                                                <div class="mb-0 text-bold ml-1 text-dark text-right col-6">{products.find(el => el.id == item.id).pu}</div>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -102,7 +123,7 @@ export default function Stock() {
                             stock.map((item, i) => (
                                 <div class="modal fade" id={`exampleModalCenter${item.id}`} tabindex="-1" role="dialog"
                                     aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-                                    <div class="modal-dialog modal-dialog-centered" role="document">
+                                    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
                                         <div class="modal-content">
                                             <div class="modal-header">
                                                 <h4 class="modal-title" id="exampleModalCenterTitle">{item.item}</h4>
@@ -111,21 +132,21 @@ export default function Stock() {
                                                 <div class='row'>
                                                     <div class='col d-flex'>
                                                         <h6>
-                                                            Quantité : <span class='text-success ml-5'>{item.in}</span>
+                                                            Quantité : <span class='text-success ml-5'>{item.stock}</span>
                                                         </h6>
                                                     </div>
                                                 </div>
                                                 <div class='row'>
                                                     <div class='col d-flex'>
                                                         <h6>
-                                                            Prix unitaire: <span class='text-dark ml-4'>{item.price} XAF</span>
+                                                            Prix unitaire: <span class='text-dark ml-4'>{products.find(el => el.id == item.id).pu}XAF</span>
                                                         </h6>
                                                     </div>
                                                 </div>
                                                 <div class='row'>
                                                     <div class='col d-flex'>
                                                         <h6>
-                                                            Prix total: <span class='text-dark ml-5'>{item.in * item.price} XAF</span>
+                                                            Prix total: <span class='text-dark ml-5'>{item.stock * products.find(el => el.id == item.id).pu}XAF</span>
                                                         </h6>
                                                     </div>
                                                 </div>
@@ -137,6 +158,31 @@ export default function Stock() {
                                                         </h6>
                                                         <span class='text-dark h6'>{item.already}</span>
                                                     </div>
+                                                </div>
+                                                <Divider><h6>PRIX DE VENTE</h6></Divider>
+                                                <ol>
+                                                    {
+                                                        item.pv.map((el, i) => (
+                                                            <li key={i}>
+                                                                {i + 1}{'. '}{el.pv} {'   ==>   '} {el.qty}
+                                                            </li>
+                                                        ))
+                                                    }
+                                                </ol>
+                                                {
+                                                    item.hasParfum &&
+                                                    <Divider><h6>PARFUMS</h6></Divider>
+                                                }
+                                                <div class='row'>
+
+                                                    {
+                                                        item.hasParfum ?
+                                                            parfum.filter(el => el.productCode == item.id).map(el => (
+                                                                <div class='col-lg-4 col-md-4 col-sm-6 h6 text-bold'>{el.parfumName} : {el.stock}</div>
+                                                            ))
+                                                            :
+                                                            null
+                                                    }
                                                 </div>
                                                 <hr />
                                                 <div class='row'>

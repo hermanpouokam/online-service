@@ -76,7 +76,12 @@ export default function NewProduct() {
         const hasParfum = () => {
             return products.find(el => el.nom == inputsValue.product).parfum.length > 0
         }
-
+        let pv = []
+        for (let i = 1; i <= inputs; i++) {
+            if (inputState[`pv${i}`] > 0) {
+                pv.push({ pv: parseInt(inputState[`pv${i}`]), qty: parseInt(inputQtyState[`qty${i}`]) })
+            }
+        }
         if (inputsValue.product == '') {
             return handleClick('error', 'Erreur', 'Veuillez choisir un article')
         } else if (!hasParfum() && inputsValue.product != '') {
@@ -85,6 +90,16 @@ export default function NewProduct() {
             const docSnap = await getDoc(docRef);
             if (docSnap.exists()) {
                 return handleClick('error', 'Erreur', 'Ce produit existe deja dans votre stock')
+            } else {
+                if (pv.length < 1) {
+                    return handleClick('error', 'Erreur', 'Veuillez ajouter un prix de vente pour ce produit')
+                }
+            }
+        }
+        for (let i = 0; i < pv.length; i++) {
+            const element = pv[i];
+            if (element.pv < products.find(el => el.nom == inputsValue.product).pu) {
+                return handleClick('error', 'Erreur', `Le prix de vente ${i + 1} est inferieur au prix d'achat`)
             }
         }
         if (hasParfum()) {
@@ -107,12 +122,7 @@ export default function NewProduct() {
             return handleClick('warning', 'Attention', "Vous n'avez pas entré de stock minimal vous ne recevrez pas d'alerte pour ce produit. cliquez a nouveau pour continuer")
         }
         setLoading(true)
-        let pv = []
-        for (let i = 1; i <= inputs; i++) {
-            if (inputState[`pv${i}`] > 0) {
-                pv.push({ pv: parseInt(inputState[`pv${i}`]), qty: parseInt(inputQtyState[`qty${i}`]) })
-            }
-        }
+
         pv = pv.sort(function (a, b) { return a.pv - b.pv })
         const productCode = products.find(el => el.nom == inputsValue.product).code
         const categorie = products.find(el => el.nom == inputsValue.product).categorie
