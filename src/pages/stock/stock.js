@@ -50,8 +50,8 @@ export default function Stock() {
                                                         class="btn btn-icon btn-success">
                                                         <i class="fas fa-plus"></i>
                                                     </a>
-                                                    <a href='/stock/newsupply' data-toggle="tooltip" data-placement="top" title='Nouvel approvisionement' class="btn btn-icon btn-success"><i class="fas fa-plus"></i></a>
-                                                    <a href="" data-toggle="tooltip" data-placement="top" title="Historique d'approvisionement" class="btn btn-icon btn-warning ml-2"><i class="fas fa-history"></i></a>
+                                                    <a href='/stock/supply/new' data-toggle="tooltip" data-placement="top" title='Nouvel approvisionement' class="btn btn-icon btn-success"><i class="fas fa-plus"></i></a>
+                                                    <a href="/stock/supply/history" data-toggle="tooltip" data-placement="top" title="Historique d'approvisionement" class="btn btn-icon btn-warning ml-2"><i class="fas fa-history"></i></a>
                                                 </div>
                                             </div>
                                         </div>
@@ -77,8 +77,8 @@ export default function Stock() {
                                 </div>
                                 <div class="row">
                                     {
-                                        stocks.length > 0 ?
-                                            stocks.map((item, i) => (
+                                        stocks?.length > 0 ?
+                                            stocks?.map((item, i) => (
                                                 <div div class="col-xl-3 col-md-6 col-lg-6" key={i} >
                                                     <div style={{ cursor: 'pointer' }} class="card" data-toggle="modal" data-target={`#exampleModalCenter${item.id}`}>
                                                         <div class="card-body card-type-3">
@@ -120,7 +120,7 @@ export default function Stock() {
                             </div>
                         </section>
                         {
-                            stock.map((item, i) => (
+                            stock?.map((item, i) => (
                                 <div class="modal fade" id={`exampleModalCenter${item.id}`} tabindex="-1" role="dialog"
                                     aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
                                     <div class="modal-dialog modal-dialog-centered modal-lg" role="document">

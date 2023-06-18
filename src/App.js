@@ -21,6 +21,7 @@ import Error from "./errors/404";
 import FinancesHistory from "./pages/finances/spendHistory";
 import NewProduct from "./pages/stock/newProduct";
 import NewCustomer from "./pages/customer/newCustomer";
+import SupplyHistory from "./pages/stock/history";
 
 const router = createBrowserRouter([
   {
@@ -80,8 +81,12 @@ const router = createBrowserRouter([
     element: <NewIncome />
   },
   {
-    path: '/stock/newsupply',
+    path: '/stock/supply/new',
     element: <NewStock />
+  },
+  {
+    path: '/stock/supply/history',
+    element: <SupplyHistory />
   },
   {
     path: '/stock/newproduct',
