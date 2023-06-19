@@ -814,7 +814,7 @@ export default function Orders() {
                                         </div>
                                         <div class="card-body">
                                             <div class="table-responsive">
-                                                <table class="table table-striped table-dark table-md table-hover" id="save-stage">
+                                                <table class="table table-striped    table-md table-hover" id="save-stage">
                                                     <thead>
                                                         <tr>
                                                             <th scope="col">#</th>
