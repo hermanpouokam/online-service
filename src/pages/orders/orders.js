@@ -238,7 +238,7 @@ export default function Orders() {
                     marge: increment(item.directProfit),
                     caisse: increment(pendingPaid),
                 });
-                await updateDoc(doc(db, `entreprise`, user.enterprise), {
+                await updateDoc(doc(db, `entreprise`, 'zta23TYCfjPSlR9wZf7r'), {
                     caisse: increment(pendingPaid),
                 });
                 await updateDoc(invoiceProductRef, {

@@ -84,7 +84,7 @@ export default function NewCustomer() {
         const { cat, nom, num1, num2, quartier, secteur, priceCat } = inputsStates
         if (!cat || !nom || !num1 || !quartier || !secteur || !priceCat) {
             setLoading1(false)
-            return handleClickAlert('error', 'Erreur', 'Veuillez remplir toutes les infomations du client les champs')
+            return handleClickAlert('error', 'Erreur', 'Veuillez remplir toutes les infomations du client')
         }
         if (cat != '' && nom != '' && num1 != '' && quartier != '' && secteur != '') {
             const docRef = await addDoc(collection(db, "customer"), {

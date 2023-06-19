@@ -21,7 +21,6 @@ export default function Navbar() {
                     user: user
                 })
             } else {
-                console.log(user)
                 dispatch({
                     type: 'SIGN_OUT',
                     user: null
@@ -110,6 +109,22 @@ export default function Navbar() {
                     customers: customers
                 });
             })
+
+            const q2 = query(collection(db, "users"));
+            let users = [];
+            const unsubscribe2 = onSnapshot(q2, (querySnapshot) => {
+                querySnapshot.forEach((doc) => {
+                    const id = doc.id
+                    const data = doc.data()
+                    users.push({ id, ...data });
+                });
+                sessionStorage.setItem("usersKilombo", JSON.stringify(users))
+                dispatch({
+                    type: 'SET_USERS',
+                    users: users
+                });
+            })
+
             const docRef = doc(db, "entreprise", user.enterprise);
             const docSnap = await getDoc(docRef);
             if (docSnap.exists()) {

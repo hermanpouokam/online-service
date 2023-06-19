@@ -22,6 +22,9 @@ import FinancesHistory from "./pages/finances/spendHistory";
 import NewProduct from "./pages/stock/newProduct";
 import NewCustomer from "./pages/customer/newCustomer";
 import SupplyHistory from "./pages/stock/history";
+import Update from "./pages/update/update";
+import DetailsPage from "./pages/customer/detailsPages";
+import ErrorPage from "./errors/errorpage";
 
 const router = createBrowserRouter([
   {
@@ -38,15 +41,32 @@ const router = createBrowserRouter([
   },
   {
     path: '/history',
-    element: <History />
+    element: <History />,
+    errorElement: <ErrorPage />
+  },
+  {
+    path: '/history/page/:page',
+    element: <History />,
+    errorElement: <ErrorPage />
   },
   {
     path: '/customer',
-    element: <Customer />
+    element: <Customer />,
+    errorElement: <ErrorPage />
+  },
+  {
+    path: '/customer/:id/edit',
+    element: <Update />,
+    errorElement: <ErrorPage />
+  },
+  {
+    path: '/customer/:id/details',
+    element: <Update />
   },
   {
     path: '/customer/addCustomer',
-    element: <NewCustomer />
+    element: <NewCustomer />,
+    errorElement: <ErrorPage />
   },
   {
     path: '/orders',
@@ -58,15 +78,18 @@ const router = createBrowserRouter([
   },
   {
     path: '/stock',
-    element: <Stock />
+    element: <Stock />,
+    errorElement: <ErrorPage />
   },
   {
     path: '/stock/category/:category',
-    element: <Stock />
+    element: <Stock />,
+    errorElement: <ErrorPage />
   },
   {
     path: '/params',
-    element: <Params />
+    element: <Params />,
+    errorElement: <ErrorPage />
   },
   {
     path: '/orders/neworder',
@@ -89,20 +112,27 @@ const router = createBrowserRouter([
     element: <SupplyHistory />
   },
   {
+    path: '/stock/supply/history/page/:page',
+    element: <SupplyHistory />
+  },
+  {
     path: '/stock/newproduct',
     element: <NewProduct />
   },
   {
     path: '/dailyclosure',
-    element: <Daily />
+    element: <Daily />,
+    errorElement: <ErrorPage />
   },
   {
     path: '/dailyclosure/search/:date',
-    element: <Daily />
+    element: <Daily />,
+    errorElement: <ErrorPage />
   },
   {
     path: '/users',
-    element: <Users />
+    element: <Users />,
+    errorElement: <ErrorPage />
   },
   {
     path: '/users/newUser',

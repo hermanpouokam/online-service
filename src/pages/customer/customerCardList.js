@@ -2,8 +2,22 @@ import { Avatar, Divider, ListItem, ListItemAvatar, ListItemText, Typography } f
 import React from 'react'
 import { Link } from 'react-router-dom'
 import DataSaverOnIcon from '@mui/icons-material/DataSaverOn';
+import { useStateValue } from '../../components/stateProvider';
 
 export default function CustomerCardList({ item, i }) {
+
+    const [{ }, dispatch] = useStateValue()
+
+    const newInvoice = item => {
+        dispatch({
+            type: 'SET_CUSTOMER',
+            customer: item
+        })
+        sessionStorage.setItem('customerInfoKilombo', JSON.stringify(item))
+        let location = window.location.href
+        window.location.assign(`/orders/neworder?form=order&custom=false&order=true&onafter=${location}`)
+    }
+
     return (
         <>
             <li class="media">
@@ -25,15 +39,15 @@ export default function CustomerCardList({ item, i }) {
                     </p>
                 </div>
                 <div class="media-cta row">
-                    <a href="#" class=" btn btn-outline-primary has-icon"><i class="fas fa-eye"></i> Details</a>{' '}
-                    <a href="#" class="btn btn-outline-success has-icon"><DataSaverOnIcon sx={{fontSize:'18px'}}  /> Creer une facture</a>{' '}
+                    <a href={`customer/${item.id}/details`} class=" btn btn-outline-primary has-icon"><i class="fas fa-eye"></i> Details</a>{' '}
+                    <Link onClick={() => newInvoice(item)} class="btn btn-outline-success has-icon"><DataSaverOnIcon sx={{ fontSize: '18px' }} /> Créer une facture</Link>{' '}
                     <div class="dropdown">
                         <a href="#" data-toggle="dropdown" class="btn btn-info dropdown-toggle">Plus</a>
                         <div class="dropdown-menu">
-                            <a href="#" class="dropdown-item has-icon"><i class="far fa-edit"></i> Editer</a>
+                            <a href={`customer/${item.id}/edit`} class="dropdown-item has-icon"><i class="far fa-edit"></i> Editer</a>
                             <div class="dropdown-divider"></div>
-                            <a href="#" class="dropdown-item has-icon text-danger"><i class="far fa-trash-alt"></i>
-                                Supprimer</a>
+                            <Link class="dropdown-item has-icon text-danger"><i class="far fa-trash-alt"></i>
+                                Supprimer</Link>
                         </div>
                     </div>
                 </div>

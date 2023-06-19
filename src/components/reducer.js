@@ -1,4 +1,5 @@
 const userFromLocal = sessionStorage.getItem("userKilombo")
+const usersFromLocal = sessionStorage.getItem("usersKilombo")
 const productsFromLocal = sessionStorage.getItem("productsKilombo")
 const customerFromLocal = sessionStorage.getItem("customerKilombo")
 const employeeFromKilombo = sessionStorage.getItem("employeeKilombo")
@@ -9,6 +10,7 @@ const enterprise = sessionStorage.getItem("enterprise")
 
 export const initialState = {
     user: JSON.parse(userFromLocal) == null ? undefined : JSON.parse(userFromLocal),
+    users: JSON.parse(usersFromLocal) == null ? undefined : JSON.parse(usersFromLocal),
     products: JSON.parse(productsFromLocal) == null ? undefined : JSON.parse(productsFromLocal),
     customer: JSON.parse(customerFromLocal) == null ? undefined : JSON.parse(customerFromLocal),
     employee: JSON.parse(employeeFromKilombo) == null ? undefined : JSON.parse(employeeFromKilombo),
@@ -70,6 +72,11 @@ const reducer = (state, action) => {
             return {
                 ...state,
                 user: action.user
+            }
+        case 'SET_USERS':
+            return {
+                ...state,
+                users: action.users
             }
         case 'SIGN_OUT':
             return {

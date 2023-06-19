@@ -24,8 +24,6 @@ export default function Customer() {
                 window.location.assign('customer?display=grid')
             }
             setDisplay(display)
-        } else {
-            window.location.assign('customer?display=grid')
         }
     }, [href])
 

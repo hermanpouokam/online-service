@@ -91,7 +91,7 @@ export default function ProductCard(props) {
                 return handleClickAlert('error', 'Erreur', "vous n'avez pas assez d'argent en caisse pour executer cette entrée, veuillez effectuer une entrée de caisse et reéssayez ")
             }
             const docRef = await addDoc(collection(db, "history"), {
-                type: 'suplly',
+                type: 'supply',
                 amount: amountToPaid,
                 user: user.uid,
                 created: serverTimestamp()
