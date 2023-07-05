@@ -246,7 +246,44 @@ export default function Login() {
             payload: false
         })
     }
+    const fourthFunction = async () => {
+        const q = query(collection(db, "stock"));
+        const querySnapshot = await getDocs(q);
+        let array = []
+        querySnapshot.forEach((doc) => {
+            const data = doc.data()
+            const id = doc.id
+            array.push({ id, ...data })
+        });
+        if (array.length > 0) {
+            let parfum = []
+            for (let i = 0; i < array.length; i++) {
+                const el = array[i];
+                const q = query(collection(db, "parfum"), where("productCode", "==", el.productCode));
+                const querySnapshot = await getDocs(q);
+                querySnapshot.forEach((doc) => {
+                    const data = doc.data()
+                    const id = doc.id
+                    parfum.push({ id, ...data })
+                });
 
+            }
+            sessionStorage.setItem('parfumKilombo', JSON.stringify(parfum))
+            dispatch({
+                type: "SET_PARFUM",
+                parfum: parfum
+            })
+            sessionStorage.setItem('stockKilombo', JSON.stringify(array))
+            dispatch({
+                type: "SET_STOCK",
+                stock: array
+            })
+        }
+        dispatch({
+            type: 'REFRESH',
+            payload: false
+        })
+    }
     async function handleLogin(e) {
 
         e.preventDefault()
@@ -266,9 +303,11 @@ export default function Login() {
                 if (checked) {
                     localStorage.setItem('userKilombo', JSON.stringify({ mail: user.email, passord: user.password }))
                 }
-                await thirdFunction()
                 await firstFunction()
+                await thirdFunction()
+                await fourthFunction()
                 await secondFunction()
+
                 window.location.assign('/?from=auth&klm=user&to=dashboard')
             })
             .catch((error) => {

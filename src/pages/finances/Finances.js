@@ -3,22 +3,38 @@ import Settings from '../settings/settings'
 import Sidebar from '../sidebar/sidebar'
 import { Link } from 'react-router-dom'
 import { LineChart, Line, ResponsiveContainer, CartesianGrid, XAxis, YAxis, Tooltip, Legend } from 'recharts';
+import { db } from '../../firebase';
+import { addDoc, collection, doc, increment, serverTimestamp, setDoc, updateDoc } from 'firebase/firestore';
+import { useStateValue } from '../../components/stateProvider';
 
 export default function Finances() {
 
   useEffect(() => {
     document.title = 'Online service - finances'
   }, [])
-  
+
+  const [{ user, users }, dispatch] = useStateValue()
+
 
   const [inputs, setInputs] = useState({
-    amt: 0,
+    amt: '',
     comment: '',
   })
 
-  const handleClick = (e) => {
-    e.preventDefault()
-    console.log(`amount:${inputs.amt}, comment:${inputs.comment}`);
+  const handleAddSpend = async () => {
+    const docRef = await addDoc(collection(db, "spends"), {
+      createdAt: serverTimestamp(),
+      userId: user.uid,
+      amount: parseInt(inputs.amt),
+      comment: inputs.comment
+    });
+    const userData = users.find(el => el.userId == user.uid)
+    const washingtonRef = doc(db, 'entreprise', userData.enterprise);
+    await updateDoc(washingtonRef, {
+      caisse: increment(-inputs.amt)
+    });
+
+    console.log('All done !!!');
   }
 
   const data = [
@@ -163,7 +179,7 @@ export default function Finances() {
                         />
                       </div>
                     </div>
-                    <button onClick={handleClick} type="button" class="btn btn-primary m-t-15 waves-effect">Ajouter</button>
+                    <button onClick={handleAddSpend} type="button" class="btn btn-primary m-t-15 waves-effect">Ajouter</button>
                   </form>
                 </div>
               </div>
