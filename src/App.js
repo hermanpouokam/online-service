@@ -61,7 +61,8 @@ const router = createBrowserRouter([
   },
   {
     path: '/customer/:id/details',
-    element: <Update />
+    element: <Update />,
+    errorElement: <ErrorPage />
   },
   {
     path: '/customer/addCustomer',
@@ -70,11 +71,13 @@ const router = createBrowserRouter([
   },
   {
     path: '/orders',
-    element: <Orders />
+    element: <Orders />,
+    errorElement: <ErrorPage />
   },
   {
     path: '/orders/page/:id',
-    element: <Orders />
+    element: <Orders />,
+    errorElement: <ErrorPage />
   },
   {
     path: '/stock',
@@ -93,31 +96,38 @@ const router = createBrowserRouter([
   },
   {
     path: '/orders/neworder',
-    element: <NewIncome />
+    element: <NewIncome />,
+    errorElement: <ErrorPage />
   },
   {
     path: '/orders/orderdetails/:id',
-    element: <Invoice />
+    element: <Invoice />,
+    errorElement: <ErrorPage />
   },
   {
     path: '/orders/neworder/:client',
-    element: <NewIncome />
+    element: <NewIncome />,
+    errorElement: <ErrorPage />
   },
   {
     path: '/stock/supply/new',
-    element: <NewStock />
+    element: <NewStock />,
+    errorElement: <ErrorPage />
   },
   {
     path: '/stock/supply/history',
-    element: <SupplyHistory />
+    element: <SupplyHistory />,
+    errorElement: <ErrorPage />
   },
   {
     path: '/stock/supply/history/page/:page',
-    element: <SupplyHistory />
+    element: <SupplyHistory />,
+    errorElement: <ErrorPage />
   },
   {
     path: '/stock/newproduct',
-    element: <NewProduct />
+    element: <NewProduct />,
+    errorElement: <ErrorPage />
   },
   {
     path: '/dailyclosure',
@@ -136,11 +146,13 @@ const router = createBrowserRouter([
   },
   {
     path: '/users/newUser',
-    element: <NewUser />
+    element: <NewUser />,
+    errorElement: <ErrorPage />
   },
   {
     path: '/finance/spend/history',
-    element: <FinancesHistory />
+    element: <FinancesHistory />,
+    errorElement: <ErrorPage />
   },
   {
     path: '*',

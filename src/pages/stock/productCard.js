@@ -5,8 +5,11 @@ import AddPhotoAlternateIcon from '@mui/icons-material/AddPhotoAlternate';
 import SaveAltIcon from '@mui/icons-material/SaveAlt';
 import { useDropzone } from 'react-dropzone';
 import { addDoc, collection, doc, increment, serverTimestamp, updateDoc } from 'firebase/firestore'
-import { db } from '../../firebase';
+import { db, storage } from '../../firebase';
 import MuiAlert from '@mui/material/Alert';
+import moment from 'moment';
+import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
+import { getRandomNumber } from '../../components/functions/randomNumber';
 
 const Transition = React.forwardRef(function Transition(props, ref) {
     return <Fade ref={ref} {...props} />;
@@ -36,6 +39,8 @@ export default function ProductCard(props) {
         message: '',
         title: ''
     })
+
+
     const handleClickOpen = () => {
         setOpen(true);
     };
@@ -59,10 +64,14 @@ export default function ProductCard(props) {
 
         reader.onloadend = () => {
             setImage(reader.result);
+            console.log(reader.result)
         };
 
         reader.readAsDataURL(file);
     };
+
+    const { acceptedFiles, getRootProps, getInputProps } = useDropzone({ onDrop });
+
 
     const handleCloseSnack = (event, reason) => {
         if (reason === 'clickaway') {
@@ -73,7 +82,6 @@ export default function ProductCard(props) {
 
 
 
-    const { getRootProps } = useDropzone({ onDrop });
 
     const handleAddStock = async () => {
         const checkValue = Object.values(inputsValue).some(value => value > 0)
@@ -90,11 +98,57 @@ export default function ProductCard(props) {
             if (amountToPaid > enterprise.caisse) {
                 return handleClickAlert('error', 'Erreur', "vous n'avez pas assez d'argent en caisse pour executer cette entrée, veuillez effectuer une entrée de caisse et reéssayez ")
             }
+            let imageRef = null
+            if (image) {
+
+                const metadata = {
+                    contentType: 'image/jpeg'
+                };
+
+                const storageRef = ref(storage, 'supply yapictures/' + `${acceptedFiles[0].name}${getRandomNumber(8)}`);
+                const uploadTask = uploadBytesResumable(storageRef, acceptedFiles[0], metadata);
+                uploadTask.on('state_changed',
+                    (snapshot) => {
+                        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                        console.log('Upload is ' + progress + '% done');
+                        switch (snapshot.state) {
+                            case 'paused':
+                                console.log('Upload is paused');
+                                break;
+                            case 'running':
+                                console.log('Upload is running');
+                                break;
+                        }
+                    },
+                    (error) => {
+                        switch (error.code) {
+                            case 'storage/unauthorized':
+                                console.log('unauthorized')
+                                break;
+                            case 'storage/canceled':
+                                console.log('canceled')
+                                break;
+
+                            case 'storage/unknown':
+                                console.log('unknown error')
+                                break;
+                        }
+                    },
+                    () => {
+                        getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+                            console.log('File available at', downloadURL);
+                            imageRef = downloadURL
+                        });
+                    }
+                );
+
+            }
             const docRef = await addDoc(collection(db, "history"), {
                 type: 'supply',
                 amount: amountToPaid,
                 user: user.uid,
-                created: serverTimestamp()
+                created: serverTimestamp(),
+                imageRef,
             });
             for (let i = 0; i < stocks.length; i++) {
                 const element = stocks[i];
@@ -124,6 +178,9 @@ export default function ProductCard(props) {
                             name: element.nom,
                         });
                     }
+                    await updateDoc(doc(db, `dailyclosure`, `${moment().format('DDMMYYYY')}`, `dailyStock`, `${element.id}`,), {
+                        appro: inputsValue[`${element.nom}`]
+                    });
                 }
             }
             const enterRef = doc(db, "entreprise", `zta23TYCfjPSlR9wZf7r`);
@@ -196,6 +253,7 @@ export default function ProductCard(props) {
                             </Box>
                             :
                             <Box {...getRootProps()} component="div" sx={{ border: '1px dashed grey', width: '33vw', height: '40vh', cursor: 'pointer' }}>
+                                <input {...getInputProps()} />
                                 <img src={image} alt="preview" style={{ width: '100%', height: '100%', objectFit: 'fill' }} />
                             </Box>
                     }

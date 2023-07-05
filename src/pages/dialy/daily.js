@@ -41,6 +41,25 @@ export default function Daily() {
         message: '',
         title: ''
     })
+    const [lastDay, setLastDay] = useState()
+
+    useEffect(() => {
+        const getData = async () => {
+            const docRef = doc(db, "dailyclosure", moment(date).format('DDMMYYYY'));
+            const docSnap = await getDoc(docRef);
+            if (docSnap.exists()) {
+                return
+            } else {
+                alert('Cette date est introuvable')
+                return window.location.assign('/dailyclosure')
+            }
+        }
+        if (moment(params.date).format('YYYY-MM-DD') !== moment().format('YYYY-MM-DD')) {
+            getData()
+        }
+    }, [params.date])
+
+
     const [open, setOpen] = React.useState(false);
 
     const handleClickOpenDatePicker = () => {
@@ -100,6 +119,31 @@ export default function Daily() {
     const handleClose = () => {
         setOpen(false);
     };
+
+    const getLastDay = async (date) => {
+        let i = 1
+        let data
+        while (i > 0) {
+            const docRef = doc(db, "dailyclosure", moment(date).subtract(i, 'day').format('DDMMYYYY'));
+            const docSnap = await getDoc(docRef);
+            if (!docSnap.exists()) {
+                i++
+            }
+            if (docSnap.exists()) {
+                let docs = docSnap.data()
+                let id = docSnap.id
+                data = { id, ...docs }
+                i = 0
+            }
+        }
+        return new Promise((resole, reject) => {
+            resole(data)
+        })
+    }
+
+
+
+
 
     const handleCloseDay = async () => {
         setLoading(true)
@@ -175,9 +219,9 @@ export default function Daily() {
         }
         setLoading(false)
         handleClickAlert('success', 'Succes', `La journee a été cloturée avec succès`)
-        // setTimeout(() => {
-        //     window.location.reload()
-        // }, 3000);
+        setTimeout(() => {
+            window.location.reload()
+        }, 3000);
     }
 
 
@@ -187,11 +231,7 @@ export default function Daily() {
                 setDailyDoc(doc.data())
             }
         });
-        onSnapshot(doc(db, "dailyclosure", moment(date).subtract(1, 'day').format('DDMMYYYY')), { includeMetadataChanges: true }, (doc) => {
-            if (doc.exists()) {
-                setPrevDay(doc.data())
-            }
-        });
+        getLastDay(date).then(e => setPrevDay(e))
         const getOrder = async () => {
             var start = new Date(date);
             start.setHours(0, 0, 0, 0);
@@ -455,7 +495,7 @@ export default function Daily() {
                                                     {_?.appro}
                                                 </td>
                                                 <td class='text-right'>
-                                                    {dailyDoc.closed == false ? 'en attente...' : Math.abs(_?.finalStock - _.stock + _?.appro)}
+                                                    {dailyDoc.closed == false ? 'en attente...' : Math.abs(_?.finalStock - (_?.appro + _.stock))}
                                                 </td>
                                                 <td class='text-right'>
                                                     {dailyDoc.closed == false ? 'en attente...' : _?.finalStock}
@@ -572,7 +612,7 @@ export default function Daily() {
                                                                             {_?.appro}
                                                                         </td>
                                                                         <td class='text-right'>
-                                                                            {dailyDoc.closed == false ? 'en attente...' : Math.abs(_?.finalStock - _.stock + _?.appro)}
+                                                                            {dailyDoc.closed == false ? 'en attente...' : Math.abs(_?.finalStock - (_?.appro + _.stock))}
                                                                         </td>
                                                                         <td class='text-right'>
                                                                             {dailyDoc.closed == false ? 'en attente...' : _?.finalStock}

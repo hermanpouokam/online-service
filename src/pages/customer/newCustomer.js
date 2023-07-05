@@ -10,7 +10,7 @@ import PersonAddAltIcon from '@mui/icons-material/PersonAddAlt';
 import MuiAlert from '@mui/material/Alert';
 import Slide from '@mui/material/Slide';
 import { db } from '../../firebase';
-import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
+import { addDoc, collection, doc, serverTimestamp, setDoc } from 'firebase/firestore';
 
 const TextMaskCustom = React.forwardRef(function TextMaskCustom(props, ref) {
     const { onChange, ...other } = props;
@@ -82,10 +82,10 @@ export default function NewCustomer() {
     const handleClick = async () => {
         setLoading1(true)
         const { cat, nom, num1, num2, quartier, secteur, priceCat } = inputsStates
-        if (!cat || !nom || !num1 || !quartier || !secteur || !priceCat) {
-            setLoading1(false)
-            return handleClickAlert('error', 'Erreur', 'Veuillez remplir toutes les infomations du client')
-        }
+        // if (!cat || !nom || !num1 || !quartier || !secteur || !priceCat) {
+        //     setLoading1(false)
+        //     return handleClickAlert('error', 'Erreur', 'Veuillez remplir toutes les infomations du client')
+        // }
         if (cat != '' && nom != '' && num1 != '' && quartier != '' && secteur != '') {
             const docRef = await addDoc(collection(db, "customer"), {
                 nom,
@@ -99,6 +99,11 @@ export default function NewCustomer() {
                 setLoading1(false)
                 return handleClickAlert('error', 'Erreur', `Erreur inconnue veuillez réessayer plus tard`)
             })
+            if (productsPrice !== {}) {
+                const priceRef = await setDoc(doc(db, "customerPrice", docRef.id), {
+                    ...productsPrice,
+                })
+            }
             setLoading1(false)
             setTimeout(() => {
                 window.location.reload()

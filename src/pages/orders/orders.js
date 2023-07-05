@@ -3,6 +3,7 @@ import Settings from '../settings/settings'
 import Sidebar from '../sidebar/sidebar'
 import {
     AppBar, Autocomplete, Button, Card, CardHeader, Chip,
+    CircularProgress,
     Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Divider,
     FormControl,
     IconButton, InputLabel, List, ListItem, ListItemText, MenuItem, Pagination, Popover, Select, Slide,
@@ -630,7 +631,15 @@ export default function Orders() {
                                     </DialogContent>
                                     <DialogActions>
                                         <Button color='error' onClick={handleClose1}>Annuler</Button>
-                                        <Button onClick={handleClickReceipt}>Receptionner</Button>
+                                        {
+                                            load ?
+                                                <Button disabled>
+                                                    Veuillez patienter
+                                                    <CircularProgress color='inherit' size={15} />{' '}
+                                                </Button>
+                                                :
+                                                <Button onClick={handleClickReceipt}>Receptionner</Button>
+                                        }
                                     </DialogActions>
                                 </Dialog>
                             </>
@@ -783,7 +792,7 @@ export default function Orders() {
                                                     </IconButton>
                                                     <div class="dropdown-menu">
                                                         {
-                                                            
+
                                                             ['tout', 'non livrée', 'Avancée', 'livrée'].map((el, i) => {
                                                                 if (window.location.href.split('?')[1]) {
                                                                     return (
