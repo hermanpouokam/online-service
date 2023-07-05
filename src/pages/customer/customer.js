@@ -27,6 +27,16 @@ export default function Customer() {
         }
     }, [href])
 
+    const handleChange = (e) => {
+        // console.log(customer)
+        const newData = customer.filter(item => {
+            const itemData = `${item.nom.toUpperCase()}}`;
+            const textData = e.target.value.toUpperCase();
+            return itemData.indexOf(textData) > -1;
+        });
+        setCustomers(newData)
+    }
+
     useEffect(() => {
         document.title = 'CLients'
     }, [])
@@ -77,7 +87,7 @@ export default function Customer() {
                                                 <div class="card-header-action d-flex">
                                                     <form class="card-header-form">
                                                         <div class="input">
-                                                            <input type="text" name="search" class="form-control" placeholder="Recherche" />
+                                                            <input type="text" name="search" onChange={handleChange} autoComplete='off' class="form-control" placeholder="Recherche" />
                                                         </div>
                                                     </form>
                                                     <div class="dropdown d-inline ml-sm-2">

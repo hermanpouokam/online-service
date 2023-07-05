@@ -97,7 +97,7 @@ const router = createBrowserRouter([
   {
     path: '/orders/neworder',
     element: <NewIncome />,
-    errorElement: <ErrorPage />
+    // errorElement: <ErrorPage />
   },
   {
     path: '/orders/orderdetails/:id',
