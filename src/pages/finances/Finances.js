@@ -10,7 +10,7 @@ import { useStateValue } from '../../components/stateProvider';
 export default function Finances() {
 
   useEffect(() => {
-    document.title = 'Online service - finances'
+    document.title = 'Finances'
   }, [])
 
   const [{ user, users }, dispatch] = useStateValue()

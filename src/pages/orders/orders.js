@@ -649,8 +649,8 @@ export default function Orders() {
         )
     }
 
-    useEffect(() =>
-        async () => {
+    useEffect(() => {
+        const getData = async () => {
             const q = query(collection(db, "invoicesProduct"));
             const querySnapshot = await getDocs(q);
             let array = []
@@ -660,7 +660,9 @@ export default function Orders() {
                 array.push({ id, ...data })
             });
             setInvoicesProducts(array)
-        }, [])
+        }
+        getData()
+    }, [])
 
     const handleSearchInvoice = (e) => {
         const newData = invoices.filter(item => {
@@ -671,8 +673,8 @@ export default function Orders() {
         setInvoicesSearch(newData)
     }
 
-    useEffect(() =>
-        async () => {
+    useEffect(() => {
+        const getData = async () => {
             const q = query(collection(db, "invoices"), orderBy('createdAt', 'desc'));
             const querySnapshot = await getDocs(q);
             let array = []
@@ -690,7 +692,9 @@ export default function Orders() {
                 setInvoices(array.filter((obj) => moment(obj.createdAt).format('YYYY-MM-DD') === moment().format('YYYY-MM-DD')))
                 setInvoicesSearch(array.filter((obj) => moment(obj.createdAt).format('YYYY-MM-DD') === moment().format('YYYY-MM-DD')))
             }
-        }, [])
+        }
+        getData()
+    }, [])
 
     React.useEffect(() => {
         if (open) {
