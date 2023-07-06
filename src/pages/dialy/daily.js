@@ -319,12 +319,13 @@ export default function Daily() {
         setDash(dashboard)
     }, [dailyDoc, prevDay])
 
-    useEffect(() =>
-        async () => {
+    useEffect(() => {
+        const fetchData = async () => {
             const subColRef = collection(db, "dailyclosure", moment(date).format('DDMMYYYY'), 'dailyStock');
             const qSnap = await getDocs(subColRef)
             setDailyStock(qSnap.docs.map(d => ({ id: d.id, ...d.data() })))
-        }, [])
+        }
+    }, [])
 
     const LiDelivererCard = ({ item }) => {
         const [open, setOpen] = React.useState(false);

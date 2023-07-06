@@ -44,10 +44,7 @@ export default function History() {
       setDataSearch(array)
       setData(array)
     }
-
-    return () => {
-      getData()
-    }
+    getData()
 
   }, [])
 

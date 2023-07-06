@@ -225,8 +225,8 @@ export default function NewIncome() {
     }, [])
 
 
-    useEffect(() =>
-        async () => {
+    useEffect(() => {
+        const getdata = async () => {
             if (customerInfo.type) {
                 setCustomerPrice([])
                 setLoading1(false)
@@ -241,7 +241,9 @@ export default function NewIncome() {
                 setCustomerPrice([])
                 setLoading1(false)
             }
-        }, [])
+        }
+        getdata()
+    }, [])
 
     function bodyClicked() {
         if (active) {

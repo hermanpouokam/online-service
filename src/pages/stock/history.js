@@ -60,10 +60,9 @@ export default function SupplyHistory() {
       setSupplyDocs(array)
     }
 
-    return () => {
-      getAll()
-      getSupplyDocs()
-    }
+    getAll()
+    getSupplyDocs()
+
   }, [])
 
   const getAllColis = (id) => {

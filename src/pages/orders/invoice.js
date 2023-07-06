@@ -43,8 +43,8 @@ export default function Invoice() {
         return sum
     }
 
-    useEffect(() =>
-        async () => {
+    useEffect(() => {
+        const getData = async () => {
             const docRef = doc(db, 'invoices', params.id);
             const docSnap = await getDoc(docRef);
             if (docSnap.exists()) {
@@ -78,7 +78,8 @@ export default function Invoice() {
                 alert("cette fature n'existe pas")
                 window.history.back()
             }
-        }, [])
+        }
+    }, [])
     useEffect(() => {
         document.title = data ? `Facture - ${data.InvoiceNum}` : 'Facture'
     }, [data])
