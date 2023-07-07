@@ -263,11 +263,8 @@ export default function Daily() {
             });
             setSellers(array.filter((obj) => moment(obj.createdAt).format('YYYY-MM-DD') === moment(date).format('YYYY-MM-DD')))
         }
-
-        return () => {
-            getOrder()
-            fetchDocs()
-        }
+        getOrder()
+        fetchDocs()
     }, [])
 
     useEffect(() => {
@@ -325,6 +322,7 @@ export default function Daily() {
             const qSnap = await getDocs(subColRef)
             setDailyStock(qSnap.docs.map(d => ({ id: d.id, ...d.data() })))
         }
+        fetchData()
     }, [])
 
     const LiDelivererCard = ({ item }) => {

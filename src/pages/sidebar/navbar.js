@@ -229,11 +229,11 @@ export default function Navbar() {
     }, [])
 
 
-    if (!user, loading) {
-        return (
-            <div class="loader"></div>
-        )
-    }
+    // if (!user, loading) {
+    //     return (
+    //         <div class="loader"></div>
+    //     )
+    // }
 
     return (
         <nav class="navbar navbar-expand-lg main-navbar sticky">
