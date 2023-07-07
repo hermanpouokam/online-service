@@ -5,29 +5,44 @@ import { LineChart, Line, ResponsiveContainer, CartesianGrid, XAxis, YAxis, Tool
 import { useStateValue } from '../../components/stateProvider';
 import { collection, getDocs, where } from 'firebase/firestore';
 import { db } from '../../firebase';
-import { getSpends } from '../../components/functions/fetchData';
+import { getInvoices, getSpends } from '../../components/functions/fetchData';
 import moment from 'moment';
+import { useTheme } from '@emotion/react';
+import { Avatar, Divider, List, ListItem, ListItemAvatar, ListItemText, useMediaQuery } from '@mui/material';
+import { Link } from 'react-router-dom';
+import { weekData } from '../../components/functions/getHomeChart';
 
 export default function Home() {
+
+  const theme = useTheme()
+  const isMobile = useMediaQuery('(min-width:600px)')
 
   const [{ enterprise, stock, customer, products }, dispatch] = useStateValue()
 
   const [orders, setOrders] = React.useState([])
   const [spends, setSpends] = React.useState([])
 
+  const getDataWidget = () => {
+    const weekData = orders.filter(el => moment(el.createdAt.toDate()).format('w') === moment().format('w') && moment(el.createdAt.toDate()).format('YYYY') === moment().format('YYYY'))
+    const groupedData = weekData.reduce((acc, item) => {
+      const date = item.date.split('T')[0];
+      if (!acc[date]) {
+        acc[date] = [];
+      }
+      acc[date].push(item);
+      return acc;
+    }, {});
+
+  }
+
   const data = [
-    { name: 'Page A', uv: 330, pv: 2400, amt: 2400 },
-    { name: 'Page B', uv: 350, pv: 2450, amt: 2300 },
-    { name: 'Page B', uv: 250, pv: 2300, amt: 2100 },
-    { name: 'Page B', uv: 239, pv: 879, amt: 2879 },
-    { name: 'Page B', uv: 321, pv: 2300, amt: 2100 },
-    { name: 'Page B', uv: 400, pv: 2300, amt: 2100 },
-    { name: 'Page B', uv: 388, pv: 2300, amt: 2100 },
-    { name: 'Page B', uv: 250, pv: 2300, amt: 2100 },
-    { name: 'Page B', uv: 234, pv: 2300, amt: 2100 },
-    { name: 'Page B', uv: 342, pv: 2300, amt: 2100 },
-    { name: 'Page B', uv: 532, pv: 2300, amt: 2100 },
-    { name: 'Page B', uv: 435, pv: 2300, amt: 2100 },
+    { name: 'lun', recette: 330, marge: 2409 },
+    { name: 'mar', recette: 350, marge: 2450 },
+    { name: 'mer', recette: 250, marge: 2260 },
+    { name: 'jeu', recette: 239, marge: 1100 },
+    { name: 'ven', recette: 321, marge: 2300 },
+    { name: 'sam', recette: 400, marge: 1800 },
+    { name: 'dim', recette: 388, marge: 2550 },
   ];
 
   const capital = stock.reduce((acc, currentValue) => {
@@ -35,16 +50,6 @@ export default function Home() {
     const sum = acc + (amount * currentValue.stock)
     return sum
   }, 0)
-
-  const getInvoices = async () => {
-    const docRef = collection(db, 'invoices')
-    const querySnapshot = await getDocs(docRef)
-    const data = querySnapshot.docs.map(d => ({ id: d.id, ...d.data() }))
-    return new Promise((resole, reject) => {
-      resole(data)
-    })
-  }
-
 
   useEffect(() => {
     getInvoices().then(data => {
@@ -178,31 +183,39 @@ export default function Home() {
                 </div>
               </div>
               <div class='row'>
-                <div class="col-12 col-sm-12 col-lg-6">
+                <div class="col-12 col-sm-12 col-lg-8">
                   <div class="card">
                     <div class="card-header">
-                      <h4>Visitors</h4>
+                      <h4>Details de ventes</h4>
+                      <div class="card-header-action">
+                        <div class=" mb-2">
+                          <button class="btn btn-info dropdown-toggle" type="button" data-toggle="dropdown"
+                            aria-haspopup="true" aria-expanded="false">
+                            Cette semaine
+                          </button>
+                          <div class="dropdown-menu">
+                            <Link class="dropdown-item" onClick={() => alert('clicked')}>Cette semaine</Link>
+                            <Link class="dropdown-item" >Ce mois</Link>
+                            <Link class="dropdown-item" >Cette année</Link>
+                            <Link class="dropdown-item" >Tout</Link>
+                          </div>
+                        </div>
+                      </div>
                     </div>
                     <div class="card-body">
-                      <LineChart
-                        width={450}
-                        height={300}
-                        data={data}
-                        margin={{
-                          top: 5,
-                          right: 5,
-                          left: 5,
-                          bottom: 5,
-                        }}
-                      >
-                        <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis dataKey="name" />
-                        <YAxis />
-                        <Tooltip />
-                        <Legend />
-                        <Line type="monotone" dataKey="pv" stroke="#8884d8" activeDot={{ r: 8 }} />
-                        <Line type="monotone" dataKey="uv" stroke="#82ca9d" />
-                      </LineChart>
+                      <ResponsiveContainer width="100%" aspect={!isMobile ? 1.5 : 1.8}>
+                        <LineChart
+                          data={data}
+                        >
+                          <CartesianGrid strokeDasharray="3 3" />
+                          <XAxis dataKey="name" />
+                          <YAxis />
+                          <Tooltip />
+                          <Legend />
+                          <Line type="monotone" dataKey="recette" stroke="#8884d8" activeDot={{ r: 8 }} />
+                          <Line type="monotone" dataKey="marge" stroke="#82ca9d" activeDot={{ r: 8 }} />
+                        </LineChart>
+                      </ResponsiveContainer>
                     </div>
                     <div class="card-footer card-footer-grey pt-0">
 
@@ -210,11 +223,85 @@ export default function Home() {
                   </div>
 
                 </div>
-                <div class='col-12 col-sm-12 col-lg-6'>
+                <div class='col-12 col-sm-12 col-lg-4'>
                   <div class=''>
                     <div class="card">
-                      <div class="card-body">
-
+                      <div class="card-header">
+                        <h4>Clients</h4>
+                        <div class="card-header-action">
+                          <div class=" mb-2">
+                            <button class="btn btn-info dropdown-toggle" type="button" data-toggle="dropdown"
+                              aria-haspopup="true" aria-expanded="false">
+                              Cette semaine
+                            </button>
+                            <div class="dropdown-menu">
+                              <Link class="dropdown-item" onClick={() => alert('clicked')}>Cette semaine</Link>
+                              <Link class="dropdown-item" >Ce mois</Link>
+                              <Link class="dropdown-item" >Cette année</Link>
+                              <Link class="dropdown-item" >Tout</Link>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="card-body" style={{ padding: 0 }}>
+                        <List
+                          sx={{
+                            width: '100%',
+                            margin: 0,
+                            bgcolor: 'background.paper',
+                            paddingRight: 2
+                          }}
+                        >
+                          <ListItem onClick={() => alert('clicked')}>
+                            <ListItemAvatar>
+                              <Avatar>
+                                {/* <ImageIcon /> */}
+                              </Avatar>
+                            </ListItemAvatar>
+                            <ListItemText primary="Photos" secondary="Jan 9, 2014" />
+                          </ListItem>
+                          <Divider variant="inset" component="li" />
+                          <ListItem>
+                            <ListItemAvatar>
+                              <Avatar>
+                                {/* <WorkIcon /> */}
+                              </Avatar>
+                            </ListItemAvatar>
+                            <ListItemText primary="Work" secondary="Jan 7, 2014" />
+                          </ListItem>
+                          <Divider variant="inset" component="li" />
+                          <ListItem>
+                            <ListItemAvatar>
+                              <Avatar>
+                                {/* <BeachAccessIcon /> */}
+                              </Avatar>
+                            </ListItemAvatar>
+                            <ListItemText primary="Vacation" secondary="July 20, 2014" />
+                          </ListItem>
+                          <Divider variant="inset" component="li" />
+                          <ListItem>
+                            <ListItemAvatar>
+                              <Avatar>
+                                {/* <BeachAccessIcon /> */}
+                              </Avatar>
+                            </ListItemAvatar>
+                            <ListItemText primary="Vacation" secondary="July 20, 2014" />
+                          </ListItem>
+                          <Divider variant="inset" component="li" />
+                          <ListItem>
+                            <ListItemAvatar>
+                              <Avatar>
+                                {/* <BeachAccessIcon /> */}
+                              </Avatar>
+                            </ListItemAvatar>
+                            <ListItemText primary="Vacation" secondary="July 20, 2014" />
+                          </ListItem>
+                        </List>
+                      </div>
+                      <div class='card-footer text-center'>
+                        <Link>
+                          Tout voir
+                        </Link>
                       </div>
                     </div>
                     <div class="card">

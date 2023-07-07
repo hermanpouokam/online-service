@@ -10,3 +10,12 @@ export const getSpends = async () => {
         resole(data)
     })
 }
+
+export const getInvoices = async () => {
+    const docRef = collection(db, 'invoices')
+    const querySnapshot = await getDocs(docRef)
+    const data = querySnapshot.docs.map(d => ({ id: d.id, ...d.data() }))
+    return new Promise((resole, reject) => {
+        resole(data)
+    })
+}
