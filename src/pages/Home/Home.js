@@ -1,10 +1,19 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import Settings from '../settings/settings'
 import Sidebar from '../sidebar/sidebar'
 import { LineChart, Line, ResponsiveContainer, CartesianGrid, XAxis, YAxis, Tooltip, Legend } from 'recharts';
+import { useStateValue } from '../../components/stateProvider';
+import { collection, getDocs, where } from 'firebase/firestore';
+import { db } from '../../firebase';
+import { getSpends } from '../../components/functions/fetchData';
+import moment from 'moment';
 
 export default function Home() {
 
+  const [{ enterprise, stock, customer, products }, dispatch] = useStateValue()
+
+  const [orders, setOrders] = React.useState([])
+  const [spends, setSpends] = React.useState([])
 
   const data = [
     { name: 'Page A', uv: 330, pv: 2400, amt: 2400 },
@@ -21,6 +30,31 @@ export default function Home() {
     { name: 'Page B', uv: 435, pv: 2300, amt: 2100 },
   ];
 
+  const capital = stock.reduce((acc, currentValue) => {
+    const amount = products.find(el => el.id == currentValue.id).pu
+    const sum = acc + (amount * currentValue.stock)
+    return sum
+  }, 0)
+
+  const getInvoices = async () => {
+    const docRef = collection(db, 'invoices')
+    const querySnapshot = await getDocs(docRef)
+    const data = querySnapshot.docs.map(d => ({ id: d.id, ...d.data() }))
+    return new Promise((resole, reject) => {
+      resole(data)
+    })
+  }
+
+
+  useEffect(() => {
+    getInvoices().then(data => {
+      setOrders(data)
+    })
+    getSpends().then(data => setSpends(data))
+  }, [])
+
+  const dettes = orders.filter(el => el.amountToPaid !== el.paid).reduce((acc, currentVal) => acc + (currentVal.amountToPaid - currentVal.paid), 0)
+  const benef = orders.reduce((acc, curVal) => acc + curVal.directProfit, 0)
 
   const dash = [
     {
@@ -28,7 +62,7 @@ export default function Home() {
       'text': 'Valeur du stock',
       'icon': 'fas fa-box',
       'bgColor': 'l-bg-cyan',
-      'number': `450`,
+      'number': capital,
       'lastUpdated': '2 jours',
       'numberColor': 'red',
       'increase': '10'
@@ -38,7 +72,17 @@ export default function Home() {
       'text': 'Montant en caisse',
       'icon': 'fas fa-dollar-sign',
       'bgColor': 'l-bg-green',
-      'number': '1,562',
+      'number': enterprise.caisse,
+      'lastUpdated': 'last month',
+      'numberColor': 'red',
+      'increase': '10',
+    },
+    {
+      'id': '8',
+      'text': 'Dettes chez clients',
+      'icon': 'fas fa-dollar-sign',
+      'bgColor': 'l-bg-purple',
+      'number': dettes,
       'lastUpdated': 'last month',
       'numberColor': 'red',
       'increase': '10',
@@ -48,27 +92,7 @@ export default function Home() {
       'text': 'Valeur totale du capital',
       'icon': 'far fa-money-bill-alt',
       'bgColor': 'l-bg-orange',
-      'number': '1,562',
-      'lastUpdated': 'last month',
-      'numberColor': 'red',
-      'increase': '10',
-    },
-    {
-      'id': '4',
-      'text': 'Benefice mensuel',
-      'icon': 'fas fa-chart-line',
-      'bgColor': 'l-bg-purple',
-      'number': '1,562',
-      'lastUpdated': 'last month',
-      'numberColor': 'red',
-      'increase': '10',
-    },
-    {
-      'id': '6',
-      'text': 'Depenses mensuelles',
-      'icon': 'fas fa-box',
-      'bgColor': 'l-bg-purple',
-      'number': '1,562',
+      'number': (capital + enterprise.caisse + dettes),
       'lastUpdated': 'last month',
       'numberColor': 'red',
       'increase': '10',
@@ -77,7 +101,37 @@ export default function Home() {
       'id': '7',
       'text': 'Listing de clients',
       'icon': 'fas fa-user',
+      'bgColor': 'l-bg-purple',
+      'number': customer.length,
+      'lastUpdated': '1 semaine',
+      'numberColor': 'red',
+      'increase': '10',
+    },
+    {
+      'id': '4',
+      'text': 'Benefice mensuel',
+      'icon': 'fas fa-chart-line',
+      'bgColor': 'l-bg-orange',
+      'number': benef,
+      'lastUpdated': 'last month',
+      'numberColor': 'red',
+      'increase': '10',
+    },
+    {
+      'id': '6',
+      'text': 'Depenses mensuelles',
+      'icon': 'fas fa-dollar-sign',
       'bgColor': 'l-bg-cyan',
+      'number': spends.filter(el => moment(el.createdAt.toDate()).format('MM') === moment().format('MM')).reduce((acc, curVal) => acc + curVal.amount, 0),
+      'lastUpdated': 'last month',
+      'numberColor': 'red',
+      'increase': '10',
+    },
+    {
+      'id': '9',
+      'text': 'Ristournes estimées du mois',
+      'icon': 'fas fa-box',
+      'bgColor': 'l-bg-green',
       'number': '1,562',
       'lastUpdated': 'last month',
       'numberColor': 'red',
@@ -98,7 +152,7 @@ export default function Home() {
                 <div class="row">
                   {
                     dash.map((item, index) => (
-                      <div class="col-xl-4 col-lg-6" key={index}>
+                      <div class="col-xl-3 col-lg-6" key={index}>
                         <div class="card">
                           <div class="card-body card-type-3">
                             <div class="row">
@@ -113,7 +167,7 @@ export default function Home() {
                               </div>
                             </div>
                             <p class="mt-3 mb-0 text-muted text-sm">
-                              <span class="text-success mr-2"><i class={`fa fa-arrow-${'up'}`}></i>10%</span>
+                              <span class="text-success mr-2"><i class={`fa fa-arrow-${'up'}`}></i>{item.increase}</span>
                               <span class="text-nowrap">Depuis {item.lastUpdated}</span>
                             </p>
                           </div>
