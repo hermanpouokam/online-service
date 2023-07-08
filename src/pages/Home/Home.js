@@ -11,39 +11,20 @@ import { useTheme } from '@emotion/react';
 import { Avatar, Divider, List, ListItem, ListItemAvatar, ListItemText, useMediaQuery } from '@mui/material';
 import { Link } from 'react-router-dom';
 import { weekData } from '../../components/functions/getHomeChart';
+import { abbDay } from '../../const';
+import ChartWiget from './chartWidget';
 
 export default function Home() {
 
   const theme = useTheme()
-  const isMobile = useMediaQuery('(min-width:600px)')
 
   const [{ enterprise, stock, customer, products }, dispatch] = useStateValue()
 
   const [orders, setOrders] = React.useState([])
   const [spends, setSpends] = React.useState([])
 
-  const getDataWidget = () => {
-    const weekData = orders.filter(el => moment(el.createdAt.toDate()).format('w') === moment().format('w') && moment(el.createdAt.toDate()).format('YYYY') === moment().format('YYYY'))
-    const groupedData = weekData.reduce((acc, item) => {
-      const date = item.date.split('T')[0];
-      if (!acc[date]) {
-        acc[date] = [];
-      }
-      acc[date].push(item);
-      return acc;
-    }, {});
+  const [weekDatas, setWeekDatas] = React.useState([])
 
-  }
-
-  const data = [
-    { name: 'lun', recette: 330, marge: 2409 },
-    { name: 'mar', recette: 350, marge: 2450 },
-    { name: 'mer', recette: 250, marge: 2260 },
-    { name: 'jeu', recette: 239, marge: 1100 },
-    { name: 'ven', recette: 321, marge: 2300 },
-    { name: 'sam', recette: 400, marge: 1800 },
-    { name: 'dim', recette: 388, marge: 2550 },
-  ];
 
   const capital = stock.reduce((acc, currentValue) => {
     const amount = products.find(el => el.id == currentValue.id).pu
@@ -54,6 +35,7 @@ export default function Home() {
   useEffect(() => {
     getInvoices().then(data => {
       setOrders(data)
+      console.log(data.map(el => moment(el.createdAt.toDate()).format('L')))
     })
     getSpends().then(data => setSpends(data))
   }, [])
@@ -184,44 +166,7 @@ export default function Home() {
               </div>
               <div class='row'>
                 <div class="col-12 col-sm-12 col-lg-8">
-                  <div class="card">
-                    <div class="card-header">
-                      <h4>Details de ventes</h4>
-                      <div class="card-header-action">
-                        <div class=" mb-2">
-                          <button class="btn btn-info dropdown-toggle" type="button" data-toggle="dropdown"
-                            aria-haspopup="true" aria-expanded="false">
-                            Cette semaine
-                          </button>
-                          <div class="dropdown-menu">
-                            <Link class="dropdown-item" onClick={() => alert('clicked')}>Cette semaine</Link>
-                            <Link class="dropdown-item" >Ce mois</Link>
-                            <Link class="dropdown-item" >Cette année</Link>
-                            <Link class="dropdown-item" >Tout</Link>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="card-body">
-                      <ResponsiveContainer width="100%" aspect={!isMobile ? 1.5 : 1.8}>
-                        <LineChart
-                          data={data}
-                        >
-                          <CartesianGrid strokeDasharray="3 3" />
-                          <XAxis dataKey="name" />
-                          <YAxis />
-                          <Tooltip />
-                          <Legend />
-                          <Line type="monotone" dataKey="recette" stroke="#8884d8" activeDot={{ r: 8 }} />
-                          <Line type="monotone" dataKey="marge" stroke="#82ca9d" activeDot={{ r: 8 }} />
-                        </LineChart>
-                      </ResponsiveContainer>
-                    </div>
-                    <div class="card-footer card-footer-grey pt-0">
-
-                    </div>
-                  </div>
-
+                  <ChartWiget orders={orders} />
                 </div>
                 <div class='col-12 col-sm-12 col-lg-4'>
                   <div class=''>

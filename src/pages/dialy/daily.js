@@ -143,8 +143,6 @@ export default function Daily() {
 
 
 
-
-
     const handleCloseDay = async () => {
         setLoading(true)
         setOpenDatePicker(false)

@@ -1,5 +1,5 @@
 import React from "react"
-import { collection, getDocs } from "firebase/firestore"
+import { collection, getDocs, orderBy } from "firebase/firestore"
 import { db } from "../../firebase"
 
 export const getSpends = async () => {
@@ -15,7 +15,16 @@ export const getInvoices = async () => {
     const docRef = collection(db, 'invoices')
     const querySnapshot = await getDocs(docRef)
     const data = querySnapshot.docs.map(d => ({ id: d.id, ...d.data() }))
+    const ordered = data.sort((a, b) => {
+        if (a.createdAt.toDate() < b.createdAt.toDate()) {
+            return -1;
+        }
+        if (a.createdAt.toDate() > b.createdAt.toDate()) {
+            return 1;
+        }
+        return 0;
+    });
     return new Promise((resole, reject) => {
-        resole(data)
+        resole(ordered)
     })
 }

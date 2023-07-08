@@ -15,7 +15,7 @@ export default function Sidebar() {
         {
             'name': 'home',
             'icon': 'desktop_windows',
-            'link': '/',
+            'link': '/?from=sidebar&klm=user&to=dashboard&rt=1&tk=Hxjq8i9iJ9uh1hdnkl',
             'text': 'Tableau de bord',
         },
         {
@@ -74,7 +74,7 @@ export default function Sidebar() {
             <div class="main-sidebar sidebar-style-2">
                 <aside id="sidebar-wrapper">
                     <div class="sidebar-brand">
-                        <a href="/">
+                        <a href="/?from=auth&klm=user&to=dashboard&rt=1&tk=Hxjq8i9iJ9uh1hdnkl">
                             <img alt="image" src="assets/img/logo.png" class="header-logo" />
                             <span class="logo-name"> Kilombo DEPOT</span>
                         </a>

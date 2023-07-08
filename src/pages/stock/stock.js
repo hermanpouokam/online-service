@@ -4,6 +4,7 @@ import Settings from '../settings/settings'
 import Sidebar from '../sidebar/sidebar'
 import { useStateValue } from '../../components/stateProvider'
 import { Divider } from '@mui/material'
+import QueueIcon from '@mui/icons-material/Queue';
 
 export default function Stock() {
 
@@ -47,10 +48,10 @@ export default function Stock() {
                                                         data-toggle="tooltip"
                                                         data-placement="top"
                                                         title='Ajouter un produit'
-                                                        class="btn btn-icon btn-success">
-                                                        <i class="fas fa-plus"></i>
+                                                        class="btn btn-icon btn-success mr-5">
+                                                        <QueueIcon />
                                                     </a>
-                                                    <a href='/stock/supply/new' data-toggle="tooltip" data-placement="top" title='Nouvel approvisionement' class="btn btn-icon btn-success"><i class="fas fa-plus"></i></a>
+                                                    <a href='/stock/supply/new' data-toggle="tooltip" data-placement="top" title='Nouvel approvisionement' class="btn btn-icon btn-success ml-5"><i class="fas fa-plus"></i></a>
                                                     <a href="/stock/supply/history" data-toggle="tooltip" data-placement="top" title="Historique d'approvisionement" class="btn btn-icon btn-warning ml-2"><i class="fas fa-history"></i></a>
                                                 </div>
                                             </div>

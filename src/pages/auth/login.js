@@ -149,7 +149,6 @@ export default function Login() {
                 const subColRef = collection(db, "dailyclosure", moment().format('DDMMYYYY'), 'dailyStock');
                 const qSnap = await getDocs(subColRef)
                 dailyStock = qSnap.docs.map(d => ({ id: d.id, ...d.data() }))
-
                 const uniqueResultArrayObjOne = stock.filter(function (objOne) {
                     return !dailyStock.some(function (objTwo) {
                         return objOne.id == objTwo.id;
@@ -162,7 +161,6 @@ export default function Login() {
                         finalStock: 0
                     });
                 })
-
             }
             check()
             return
@@ -308,7 +306,7 @@ export default function Login() {
                 await fourthFunction()
                 await secondFunction()
 
-                window.location.assign('/?from=auth&klm=user&to=dashboard')
+                window.location.assign('/?from=auth&klm=user&to=dashboard&rt=1&tk=Hxjq8i9iJ9uh1hdnkl')
             })
             .catch((error) => {
                 setloading(false)
@@ -354,7 +352,7 @@ export default function Login() {
                                 </h2>
                             </div>
                             <div class='p-2 mt-3 text-center'>
-                                <span class='h6 text-light'>Bienvenu sur la platforme de gestion comerciale LE KILOMBO DEPOT.</span>{' '}
+                                <span class='h6 text-light'>Bienvenu sur la plateforme de gestion commerciale Online Service.</span>{' '}
                                 <span class='h6 text-light'>
                                     Entrez votre nom d'utilisateur pour vous connectez
                                 </span>

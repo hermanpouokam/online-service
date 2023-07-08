@@ -570,9 +570,7 @@ export default function Orders() {
                                 <ModeEditOutlineIcon color='primary' fontSize='inherit' />
                             </IconButton>
                     }
-                    <IconButton href={`orders/orderdetails/${item.id}`} color='primary' aria-label="delete" size="small">
-                        <VisibilityIcon fontSize="inherit" />
-                    </IconButton>
+                    
                     {
                         item.delivered ?
                             <IconButton color='primary' disabled aria-label="delete" size="small">
@@ -644,6 +642,9 @@ export default function Orders() {
                                 </Dialog>
                             </>
                     }
+                    <IconButton href={`orders/orderdetails/${item.id}`} color='primary' aria-label="delete" size="small">
+                        <VisibilityIcon fontSize="inherit" />
+                    </IconButton>
                 </td>
             </tr >
         )
@@ -715,6 +716,9 @@ export default function Orders() {
         }
         if (el == 'livrée') {
             return setInvoicesSearch(invoices.filter(item => item.delivered === true))
+        }
+        if (el == 'avancée') {
+            return setInvoicesSearch(invoices.filter(item => item.amountToPaid !== item.paid))
         }
     }
 
@@ -797,13 +801,12 @@ export default function Orders() {
                                                     <div class="dropdown-menu">
                                                         {
 
-                                                            ['tout', 'non livrée', 'Avancée', 'livrée'].map((el, i) => {
+                                                            ['tout', 'non livrée', 'avancée', 'livrée'].map((el, i) => {
                                                                 if (window.location.href.split('?')[1]) {
                                                                     return (
 
                                                                         <Link href="#"
-                                                                            style={filter == el ? { background: '#dff9fb' } : {}
-                                                                            }
+                                                                            style={filter == el ? { background: '#dff9fb' } : {}}
                                                                             onClick={() => handleChangeFilter(el)}
                                                                             class="dropdown-item text-capitalize has-icon"
                                                                         >{el}</Link>
