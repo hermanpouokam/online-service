@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { AlertTitle, Box, Button, Container, Dialog, DialogActions, DialogContent, Fade, Grid, Slide, Snackbar, TextField, Typography, } from '@mui/material'
+import { AlertTitle, Backdrop, Box, Button, CircularProgress, Container, Dialog, DialogActions, DialogContent, Fade, Grid, Slide, Snackbar, TextField, Typography, } from '@mui/material'
 import { useStateValue } from '../../components/stateProvider'
 import AddPhotoAlternateIcon from '@mui/icons-material/AddPhotoAlternate';
 import SaveAltIcon from '@mui/icons-material/SaveAlt';
@@ -24,10 +24,8 @@ function SlideTransition(props) {
 }
 
 
-export default function ProductCard(props) {
+export default function ProductCard({ supplier, setProgress, setOpenBackDrop, setLabel }) {
 
-
-    const supplier = props.supplier
     const [open, setOpen] = React.useState(false);
     const [openAlert, setOpenAlert] = useState(false)
     const [image, setImage] = useState(null)
@@ -39,7 +37,6 @@ export default function ProductCard(props) {
         message: '',
         title: ''
     })
-
 
     const handleClickOpen = () => {
         setOpen(true);
@@ -85,9 +82,9 @@ export default function ProductCard(props) {
 
     const handleAddStock = async () => {
         const checkValue = Object.values(inputsValue).some(value => value > 0)
-
         if (inputsValue !== {} && checkValue) {
             let amountToPaid = 0
+            setOpenBackDrop(true)
 
             for (let i = 0; i < stocks.length; i++) {
                 const element = stocks[i];
@@ -100,17 +97,16 @@ export default function ProductCard(props) {
             }
             let imageRef = null
             if (image) {
-
                 const metadata = {
                     contentType: 'image/jpeg'
                 };
-
-                const storageRef = ref(storage, 'supply yapictures/' + `${acceptedFiles[0].name}${getRandomNumber(8)}`);
+                setLabel(`ajout d'image`)
+                const storageRef = ref(storage, 'supply pictures/' + `${acceptedFiles[0].name}${getRandomNumber(8)}`);
                 const uploadTask = uploadBytesResumable(storageRef, acceptedFiles[0], metadata);
                 uploadTask.on('state_changed',
                     (snapshot) => {
                         const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                        console.log('Upload is ' + progress + '% done');
+                        setProgress(progress)
                         switch (snapshot.state) {
                             case 'paused':
                                 console.log('Upload is paused');
@@ -134,15 +130,12 @@ export default function ProductCard(props) {
                                 break;
                         }
                     },
-                    () => {
-                        getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-                            console.log('File available at', downloadURL);
-                            imageRef = downloadURL
-                        });
-                    }
+                    getDownloadURL(uploadTask.snapshot.ref).then(async (downloadURL) => {
+                        imageRef = downloadURL
+                    })
                 );
-
             }
+
             const docRef = await addDoc(collection(db, "history"), {
                 type: 'supply',
                 amount: amountToPaid,
@@ -187,11 +180,15 @@ export default function ProductCard(props) {
             await updateDoc(enterRef, {
                 caisse: increment(-amountToPaid)
             });
+
             handleClickAlert('success', 'Succès', 'Votre stock a été mis à jour avec succès')
+
+            setOpenBackDrop(false)
 
             return setTimeout(() => {
                 window.location.reload()
-            }, 3000);
+            }, 1500);
+
         } else {
             return handleClickAlert('error', 'Erreur', 'Veuillez ajouter une quantite de produit')
         }
