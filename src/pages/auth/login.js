@@ -28,7 +28,7 @@ export default function Login() {
         e.preventDefault()
         setloading(true)
         try {
-            const q = query(collection(db, "users"), where("username", "==", username));
+            const q = query(collection(db, "users"), where("username", "==", username.toLowerCase()));
             const querySnapshot = await getDocs(q);
             if (querySnapshot.empty) {
                 setloading(false)
@@ -165,10 +165,19 @@ export default function Login() {
             check()
             return
         }
+        const docRefE = doc(db, "entreprise", user.enterprise);
+        const docSnapE = await getDoc(docRefE);
+        let eData
+        if (docSnapE.exists()) {
+            const data = docSnapE.data()
+            eData = data
+            sessionStorage.setItem("enterprise", JSON.stringify(data))
+        }
+
         await setDoc(doc(db, "dailyclosure", moment().format('DDMMYYYY')), {
             createdAt: serverTimestamp(),
             closed: false,
-            caisse: parseInt(enterprise.caisse),
+            caisse: parseInt(eData.caisse),
             marge: 0,
             depense: 0
         });

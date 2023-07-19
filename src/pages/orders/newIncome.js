@@ -145,6 +145,7 @@ export default function NewIncome() {
             invoiceNum: invoiceNum,
             customerId: customerInfo.type ? customerInfo.type : customerInfo.id,
             customerName: customerInfo.nom,
+            customernum: customerInfo.numero,
             createdAt: serverTimestamp(),
             delivered: false,
             directProfit: articles.reduce((acc, val) => {

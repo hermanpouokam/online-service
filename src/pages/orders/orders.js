@@ -61,7 +61,6 @@ export default function Orders() {
     };
     const handleChange = (event, value) => {
         const splitedUrl = window.location.href.split('?')
-
         if (splitedUrl[1]) {
             window.location.assign(`orders/page/${value}?${splitedUrl[1]}`)
         } else {
@@ -85,12 +84,14 @@ export default function Orders() {
         const [rowSelectionModel, setRowSelectionModel] = React.useState([])
         const [load, setLoad] = useState(false)
         const [open1, setOpen1] = React.useState(false);
-
+        const [errorP, setErrorP] = React.useState(null)
         const handleClickOpen1 = () => {
             setOpen1(true);
         };
 
         const handleClose1 = () => {
+            setErrorP(null)
+            setAllPaid(pendingPaid)
             setOpen1(false);
         };
 
@@ -232,15 +233,18 @@ export default function Orders() {
         let arrayProduct = invoicesProducts.filter(el => el.invoiceNum == item.invoiceNum);
 
         const handleClickReceipt = async () => {
+            if (allPaid > (item.amountToPaid - item.paid)) {
+                return setErrorP('Le montant ne peut etre superieur à la facture.')
+            }
             setLoad(true)
             try {
                 let invoiceProductRef = doc(db, "invoices", item.id);
                 await updateDoc(doc(db, `dailyclosure`, `${moment().format('DDMMYYYY')}`), {
                     marge: increment(item.directProfit),
-                    caisse: increment(pendingPaid),
+                    caisse: increment(allPaid),
                 });
                 await updateDoc(doc(db, `entreprise`, 'zta23TYCfjPSlR9wZf7r'), {
-                    caisse: increment(pendingPaid),
+                    caisse: increment(allPaid),
                 });
                 await updateDoc(invoiceProductRef, {
                     amountToPaid: productOfArray(arrayProduct),
@@ -255,9 +259,32 @@ export default function Orders() {
             }
         }
 
+        const handleClickSold = async () => {
+            if (allPaid > (item.amountToPaid - item.paid)) {
+                return setErrorP('Le montant ne peut etre superieur à la dette.')
+            }
+            setLoad(true)
+            try {
+                let invoiceProductRef = doc(db, "invoices", item.id);
+                await updateDoc(doc(db, `dailyclosure`, `${moment().format('DDMMYYYY')}`), {
+                    caisse: increment(allPaid),
+                });
+                await updateDoc(doc(db, `entreprise`, 'zta23TYCfjPSlR9wZf7r'), {
+                    caisse: increment(allPaid),
+                });
+                await updateDoc(invoiceProductRef, {
+                    paid: increment(allPaid),
+                });
+                window.location.reload()
+            } catch (error) {
+                setLoad(false)
+                console.log(error)
+            }
+        }
 
-        const [allPaid, setAllPaid] = useState(productOfArray(arrayProduct))
-        const [pendingPaid, setPendingPaid] = useState(productOfArray(arrayProduct))
+
+        const [allPaid, setAllPaid] = useState(item.delivered ? parseInt(item.amountToPaid - item.paid) : productOfArray(arrayProduct))
+        const [pendingPaid, setPendingPaid] = useState(item.delivered ? parseInt(item.amountToPaid - item.paid) : productOfArray(arrayProduct))
 
         const rows = arrayProduct.map((item, i) => {
             const data = item;
@@ -570,82 +597,107 @@ export default function Orders() {
                                 <ModeEditOutlineIcon color='primary' fontSize='inherit' />
                             </IconButton>
                     }
-                    
+
                     {
                         item.delivered ?
-                            <IconButton color='primary' disabled aria-label="delete" size="small">
-                                <CheckOutlined fontSize="inherit" />
-                            </IconButton>
+                            item.amountToPaid == item.paid ?
+                                <IconButton color='primary' disabled aria-label="delete" size="small">
+                                    <CheckOutlined fontSize="inherit" />
+                                </IconButton>
+                                :
+                                <IconButton color='primary' onClick={handleClickOpen1} aria-label="delete" size="small">
+                                    <CheckOutlined fontSize="inherit" />
+                                </IconButton>
                             :
                             <>
                                 <IconButton color='primary' onClick={handleClickOpen1} aria-label="delete" size="small">
                                     <CheckOutlined fontSize="inherit" />
                                 </IconButton>
-                                <Dialog
-                                    open={open1}
-                                    TransitionComponent={Transition}
-                                    keepMounted
-                                    aria-labelledby="responsive-dialog-title"
-                                >
-                                    <DialogTitle>{"Receptionner cette facture ?"}</DialogTitle>
-                                    <DialogContent>
-                                        <DialogContentText id="alert-dialog-slide-description">
-                                            selectionnez un livreur et entrez le montant puis enregistrez
-                                        </DialogContentText>
-                                        <FormControl margin='dense' fullWidth>
-                                            <InputLabel id="demo-simple-select-label">Livreur</InputLabel>
-                                            <Select
-                                                labelId="demo-simple-select-label"
-                                                fullWidth
-                                                id="demo-simple-select"
-                                                label="Livreur"
-                                                onChange={(e) => setDeliverer(e.target.value)}
-                                            >
-
-                                                <MenuItem value={'aucun'}>aucun</MenuItem>
-                                                {
-                                                    employee.filter(it => it.job === 'driver' && it.cat == '1').map((el) => (
-                                                        <MenuItem value={el.id}>{el.surname}</MenuItem>
-                                                    ))
-                                                }
-                                            </Select>
-                                        </FormControl>
-                                        <TextField
-                                            autoComplete='off'
-                                            fullWidth
-                                            autoFocus
-                                            onChange={(e) => {
-                                                if (onlyNumberTest(e.target.value)) {
-                                                    setAllPaid(e.target.value)
-                                                }
-                                            }}
-                                            margin="dense"
-                                            type='number'
-                                            id="outlined-basic"
-                                            label="Avance de paiement"
-                                            variant="outlined"
-                                            value={allPaid}
-                                        />
-                                    </DialogContent>
-                                    <DialogActions>
-                                        <Button color='error' onClick={handleClose1}>Annuler</Button>
-                                        {
-                                            load ?
-                                                <Button disabled>
-                                                    Veuillez patienter
-                                                    <CircularProgress color='inherit' size={15} />{' '}
-                                                </Button>
-                                                :
-                                                <Button onClick={handleClickReceipt}>Receptionner</Button>
-                                        }
-                                    </DialogActions>
-                                </Dialog>
                             </>
                     }
                     <IconButton href={`orders/orderdetails/${item.id}`} color='primary' aria-label="delete" size="small">
                         <VisibilityIcon fontSize="inherit" />
                     </IconButton>
                 </td>
+                <Dialog
+                    open={open1}
+                    TransitionComponent={Transition}
+                    keepMounted
+                    aria-labelledby="responsive-dialog-title"
+                >
+                    <DialogTitle>{item.delivered ? "solder cette facture ?" : "Receptionner cette facture ?"}</DialogTitle>
+                    <DialogContent>
+                        <DialogContentText id="alert-dialog-slide-description">
+                            {
+                                !item.delivered ?
+                                    'selectionnez un livreur et entrez le montant versé puis enregistrez'
+                                    :
+                                    'entrez le montant puis enregister'
+                            }
+                        </DialogContentText>
+
+                        <FormControl margin='dense' fullWidth>
+                            {
+                                !item.delivered &&
+                                <>
+                                    <InputLabel id="demo-simple-select-label">Livreur</InputLabel>
+                                    <Select
+                                        labelId="demo-simple-select-label"
+                                        fullWidth
+                                        id="demo-simple-select"
+                                        label="Livreur"
+                                        onChange={(e) => setDeliverer(e.target.value)}
+                                    >
+
+                                        <MenuItem value={'aucun'} selected>aucun</MenuItem>
+                                        {
+                                            employee.filter(it => it.job === 'driver' && it.cat == '1').map((el) => (
+                                                <MenuItem value={el.id}>{el.surname}</MenuItem>
+                                            ))
+                                        }
+                                    </Select>
+                                </>
+                            }
+                        </FormControl>
+                        <TextField
+                            autoComplete='off'
+                            fullWidth
+                            autoFocus
+                            onChange={(e) => {
+                                if (onlyNumberTest(e.target.value)) {
+                                    setAllPaid(e.target.value)
+                                }
+                            }}
+                            margin="dense"
+                            type='number'
+                            id="outlined-basic"
+                            label="Avance de paiement"
+                            variant="outlined"
+                            value={allPaid}
+                        />
+                    </DialogContent>
+                    {
+                        errorP &&
+                        <p class='text-danger px-4 h6' id="alert-dialog-slide-description">
+                            {errorP}
+                        </p>
+                    }
+                    <DialogActions>
+                        <Button color='error' onClick={handleClose1}>Annuler</Button>
+                        {
+                            load ?
+                                <Button disabled>
+                                    Veuillez patienter {' '}
+                                    <CircularProgress color='inherit' size={15} />{' '}
+                                </Button>
+                                :
+                                item.amountToPaid !== item.paid ?
+                                    <Button onClick={handleClickSold}>Enregistrer</Button>
+                                    :
+                                    <Button onClick={handleClickReceipt}>Receptionner</Button>
+                        }
+                    </DialogActions>
+                </Dialog>
             </tr >
         )
     }
@@ -723,10 +775,20 @@ export default function Orders() {
     }
 
     const handleClickContinue = () => {
+        if (inputsStates.nom !== '') {
+            let customer = { ...inputsStates, type: 'client divers' }
+            dispatch({
+                type: 'SET_CUSTOMER',
+                customer: customer
+            })
+            sessionStorage.setItem('customerInfoKilombo', JSON.stringify({ ...inputsStates, type: 'client divers' }))
+            let location = window.location.href
+            window.location.assign(`/orders/neworder?form=order&custom=false&order=true&onafter=${location}`)
+        }
         if (!value, value.nom == '') {
             return
         }
-        if (value.nom == 'client divers') {
+        if (value.nom == 'Client divers') {
             let customer = { ...inputsStates, type: 'client divers' }
             dispatch({
                 type: 'SET_CUSTOMER',
@@ -876,7 +938,7 @@ export default function Orders() {
                                 aria-labelledby="scroll-dialog-title"
                                 aria-describedby="scroll-dialog-description"
                             >
-                                <DialogTitle id="scroll-dialog-title">Choisissez un client</DialogTitle>
+                                <DialogTitle id="scroll-dialog-title">Veuillez choisir un client</DialogTitle>
                                 <DialogContent dividers={scroll === 'paper'}>
                                     <div class="form-group">
                                         <Autocomplete
@@ -895,12 +957,12 @@ export default function Orders() {
                                             }}
                                             fullWidth
                                             id="controllable-states-demo"
-                                            options={[{ nom: 'client divers' }, ...customer]}
+                                            options={[{ nom: 'Client divers' }, ...customer]}
                                             renderInput={(params) => <TextField {...params} value={params.nom} label="client" />}
                                         />
                                     </div>
                                     {
-                                        value && value.nom != 'client divers' ?
+                                        value && value.nom != 'Client divers' ?
 
                                             <>
                                                 <div class="form-group">

@@ -82,13 +82,10 @@ export default function Invoice() {
         }
         getData()
     }, [])
+
     useEffect(() => {
         document.title = data ? `Facture - ${params.id}` : 'Facture'
     }, [data])
-
-    // if (!data, !invoicesProduct, !groupedArray) {
-    //     return <div class="loader"></div>
-    // }
 
     return (
         <div>
@@ -96,7 +93,7 @@ export default function Invoice() {
                 <div class="main-wrapper main-wrapper-1">
                     <div class="navbar-bg"></div>
                     <Sidebar />
-                    <div class="main-content">
+                    <div class="main-content" >
                         {
                             !data || !invoicesProduct || !groupedArray ?
                                 <div class='card'>
@@ -112,13 +109,13 @@ export default function Invoice() {
                                                 <div class="row">
                                                     <div class="col-lg-12 text-dark">
                                                         <div class="invoice-title">
-                                                            <h4 class="text-center text-uppercase">Le kilombo depot</h4>
-                                                            <p class='text-center'>TEL: 677788899 / Ngodi-bakoko, Ari, Village</p>
+                                                            <h3 class="text-center text-uppercase">Le kilombo depot</h3>
+                                                            <p class='text-center h6'>TEL: 677788899 / Ngodi-bakoko, Ari, Village</p>
                                                         </div>
                                                         <hr />
                                                         <div class="row">
                                                             <div class="col-md-6">
-                                                                <address>
+                                                                <address style={{ fontSize: 16 }}>
                                                                     <strong>Facture N°{data.invoiceNum}</strong><br />
                                                                     <strong>Date</strong>: {moment(data.createdAt.toDate()).format('DD/MM/YYYY • HH:mm')}<br />
                                                                     {/* <strong>Livrée</strong>: {data.delivered == true ? 'oui' : 'non'}<br />
@@ -126,9 +123,9 @@ export default function Invoice() {
                                                                 </address>
                                                             </div>
                                                             <div class="col-md-6 text-md-right">
-                                                                <address>
+                                                                <address style={{ fontSize: 16 }}>
                                                                     Nom du client: <strong>{data.customerName}</strong><br />
-                                                                    Contact: <strong>{data.customerId == 'client divers' ? data.customerNum : customer.find(item => item.id == data.customerId).tel.map((el, index) => { return `${el} ${index == 0 ? ' / ' : ''}` })}</strong><br />
+                                                                    Contact: <strong>{data.customerId == 'client divers' ? data.customerNum ? data.customerNum : 'NaN' : customer.find(item => item.id == data.customerId).tel.map((el, index) => { return `${el} ${index == 0 ? ' / ' : ''}` })}</strong><br />
                                                                     <strong>Ngodi-bakoko, Douala</strong><br />
                                                                 </address>
                                                             </div>
@@ -141,7 +138,7 @@ export default function Invoice() {
                                                         <div class="table-responsive">
                                                             <table class="table table-bordered table-striped table-hover table-sm" id="save-stage">
                                                                 <tbody>
-                                                                    <tr>
+                                                                    <tr style={{ fontSize: 16 }}>
                                                                         <th class='text-center' data-width="40">#</th>
                                                                         <th class="text-center">Désignations</th>
                                                                         <th class="text-center">P.U</th>
