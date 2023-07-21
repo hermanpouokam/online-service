@@ -84,7 +84,7 @@ export default function Sidebar() {
                             links.map((item, i) => (
                                 <li key={i} class={` ${location == item.link ? 'active' : null}`}>
                                     <a href={item.link} class={`nav-link `}>
-                                        <i class={`material-icons ${i == 1 && 'has-message'}`}>{item.icon}</i>
+                                        <i class={`material-icons`}>{item.icon}</i>
                                         <span>{item.text}</span>
                                     </a>
                                 </li>

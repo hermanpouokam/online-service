@@ -226,7 +226,7 @@ export default function Navbar() {
         startDay()
         setLoading(false)
 
-    }, [])
+    }, [refresh])
 
 
     if (!user, loading) {

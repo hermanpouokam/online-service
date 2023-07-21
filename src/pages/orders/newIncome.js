@@ -32,7 +32,7 @@ export default function NewIncome() {
     const theme = useTheme();
     const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
-    const [{ customerInfo, stock, products, parfum }, dispatch] = useStateValue()
+    const [{ customerInfo, stock, products, parfum, refresh }, dispatch] = useStateValue()
 
     const [articles, setArticles] = useState([])
     const [des, setDes] = useState(null)
@@ -50,6 +50,7 @@ export default function NewIncome() {
     const containerRef = useRef()
     const [modalOpened, setModalOpened] = useState(false)
     const [productPrice, setProductPrice] = useState(null)
+    const [step, setStep] = useState('')
 
     const [states, setStates] = useState({
         variant: '',
@@ -62,7 +63,8 @@ export default function NewIncome() {
         const index = articles.findIndex(
             (item) => item.nom === des.nom
         );
-        console.log(des)
+        console.log('des', des);
+        console.log('1st', customerPrice[`price${des.productCode}`] ? customerPrice[`price${des.productCode}`] : pv(indexn).pv);
         if (index >= 0) {
             if ((articles[index].qty + qty) > des.stock) {
                 return handleClickAlert('error', 'Erreur', `Vous n'avez pas assez de produit en stock`)
@@ -94,6 +96,7 @@ export default function NewIncome() {
                 qty: qty,
                 pu: customerPrice[`price${des.productCode}`] ? customerPrice[`price${des.productCode}`] : pv(indexn).pv
             }])
+            console.log('2nd', customerPrice[`price${des.productCode}`] ? customerPrice[`price${des.productCode}`] : pv(indexn).pv);
         }
         setDes(null)
         setQty('')
@@ -113,11 +116,8 @@ export default function NewIncome() {
         })
     };
 
-    const handleDes = e => {
-        setDes(e.target.value)
-    }
-
     const addInvoice = async () => {
+        setStep(' Création de la facture...')
         let invoiceNum = getRandomNumber(8)
         setLoading(true)
         for (let i = 0; i < articles.length; i++) {
@@ -144,8 +144,8 @@ export default function NewIncome() {
         const docRef = await addDoc(collection(db, "invoices"), {
             invoiceNum: invoiceNum,
             customerId: customerInfo.type ? customerInfo.type : customerInfo.id,
-            customerName: customerInfo.nom,
-            customernum: customerInfo.numero,
+            customerName: customerInfo?.nom,
+            customernum: customerInfo?.tel,
             createdAt: serverTimestamp(),
             delivered: false,
             directProfit: articles.reduce((acc, val) => {
@@ -163,15 +163,18 @@ export default function NewIncome() {
                 price: el.pu,
                 invoiceNum: invoiceNum
             });
-            console.log(docRefProducts.id, 'added successfully')
         })
+        setStep('Mis à jour du stock...')
 
         dispatch({
             type: 'REFRESH',
             payload: true
         })
-        setLoading(false)
-        window.location.reload()
+        handleClickAlert('success', 'Succes', 'Votre facture a été crée avec succès')
+        setTimeout(() => {
+            setLoading(false)
+            window.location.reload()
+        }, 1500);
     }
 
     function liClicked(e, i) {
@@ -180,18 +183,17 @@ export default function NewIncome() {
         setIndex(i)
         setActive(!active)
         setStocks(stockInit)
-        console.log(e)
         inputRef.current.value = ''
         inputQtyRef.current.focus()
     }
 
     const pv = (i) => {
-        if (stocks[i].pv[customerInfo.priceCat]) {
-            return stocks[i].pv[customerInfo.priceCat]
-        } else if (stocks[i].pv[customerInfo.priceCat - 1]) {
-            return stocks[i].pv[customerInfo.priceCat - 1]
-        } else if (stocks[i].pv[customerInfo.priceCat - 2]) {
-            return stocks[i].pv[customerInfo.priceCat - 2]
+        if (stock.find(item => item.productCode === des.productCode)?.pv[customerInfo.priceCat]) {
+            return stock.find(item => item.productCode === des.productCode)?.pv[customerInfo.priceCat]
+        } else if (stock.find(item => item.productCode === des.productCode)?.pv[customerInfo.priceCat - 1]) {
+            return stock.find(item => item.productCode === des.productCode)?.pv[customerInfo.priceCat - 1]
+        } else if (stock.find(item => item.productCode === des.productCode)?.pv[customerInfo.priceCat - 2]) {
+            return stock.find(item => item.productCode === des.productCode)?.pv[customerInfo.priceCat - 2]
         } else {
             return 'price do not exist'
         }
@@ -214,7 +216,6 @@ export default function NewIncome() {
             return { ...data, nom: nom, stock: stockP, productParfum: productParfum }
         })
         data = data.filter(el => el.hasParfum !== true)
-
         setStockInit([
             ...data,
             ...parfumModified
@@ -223,8 +224,7 @@ export default function NewIncome() {
             ...data,
             ...parfumModified
         ])
-    }, [])
-
+    }, [refresh])
 
     useEffect(() => {
         const getdata = async () => {
@@ -244,7 +244,7 @@ export default function NewIncome() {
             }
         }
         getdata()
-    }, [])
+    }, [refresh])
 
     function bodyClicked() {
         if (active) {
@@ -299,7 +299,7 @@ export default function NewIncome() {
 
     const handleChange = (e) => {
         const newData = stockInit.filter(item => {
-            const itemData = `${item.productCode.toUpperCase()} ${item.nom.toUpperCase()}`;
+            const itemData = `${item.nom.toUpperCase()}`;
             const textData = e.target.value.toUpperCase();
             return itemData.indexOf(textData) > -1;
         });
@@ -361,8 +361,8 @@ export default function NewIncome() {
                             sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
                             open={loading}
                         >
-                            <CircularProgress color="primary" />
-                            <Typography color={'#000'}>Création de la facture</Typography>
+                            <CircularProgress color="primary" />{'  '}
+                            <Typography color={'#000'}>{step}</Typography>
                         </Backdrop>
                         <div class='col-12' style={{ display: 'flex', justifyContent: "center", alignItems: 'center' }}>
 
@@ -429,7 +429,7 @@ export default function NewIncome() {
                                                             </th>
                                                             <th scope="row" style={{ textAlign: 'right' }}>
                                                                 <div class='mt-2'></div>
-                                                                <CurrencyFormat value={productOfArray(articles)} displayType={'text'} thousandSeparator={true} prefix={'XAF'} />
+                                                                <CurrencyFormat value={productOfArray(articles)} displayType={'text'} thousandSeparator={true} prefix={'FCFA'} />
                                                                 <div class='mt-2'></div>
                                                             </th>
                                                             <td class='text-center'>
@@ -486,8 +486,8 @@ export default function NewIncome() {
                                                     type="text" disabled
                                                     class="form-control col-lg-2 col-md-2 mb-1 col-sm-6 disabled"
                                                     id="inlineFormInputName2"
-                                                    placeholder="Stock" value={des != null ? des.stock : 'stock'
-                                                    }
+                                                    placeholder="Stock"
+                                                    value={des != null ? des.stock : 'stock'}
                                                 />
                                                 {
                                                     customerInfo.type ?
@@ -512,7 +512,7 @@ export default function NewIncome() {
                                                             class="form-control col-lg-2 col-md-3 col-sm-6 mb-1 disabled"
                                                             id="inlineFormInputName2"
                                                             placeholder="Prix"
-                                                            value={des != null ? customerPrice[`price${des.productCode}`] ? customerPrice[`price${des.productCode}`] : pv(indexn).pv : 'prix'}
+                                                            value={des !== null ? customerPrice[`price${des.productCode}`] ? customerPrice[`price${des.productCode}`] : pv(indexn).pv : 'prix'}
                                                         />
                                                 }
                                                 <input type="number" ref={inputQtyRef} class="form-control col-lg-2 col-md-2 col-sm-6 mb-1" id="inlineFormInputName2"

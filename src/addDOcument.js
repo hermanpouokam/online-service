@@ -6,13 +6,13 @@ import { customer, product } from './database';
 export default function AddDOcument() {
 
   const addDocFirebase = async () => {
-    for (let i = 0; i < customer.length; i++) {
-      const el = customer[i];
-      const docRef = await addDoc(collection(db, "customer"), {
+    for (let i = 0; i < product.length; i++) {
+      const el = product[i];
+      await setDoc(doc(db, "articles", el.code), {
         createdAt: serverTimestamp(),
         ...el
-      })
-      // console.log("Document written with ID: ", docRef.id);
+      });
+      console.log("Document written with ID: ", el.code);
     }
 
   }

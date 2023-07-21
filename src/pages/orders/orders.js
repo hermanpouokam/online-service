@@ -39,7 +39,7 @@ export default function Orders() {
     const [{ customer, stock, parfum, employee, user }, dispatch] = useStateValue()
     const [inputsStates, setInputsStates] = useState({
         nom: '',
-        numero: '',
+        tel: '',
         location: ''
     })
     const [filter, setFilter] = useState('tout')
@@ -946,7 +946,7 @@ export default function Orders() {
                                             onChange={(event, newValue) => {
                                                 setInputsStates({
                                                     nom: '',
-                                                    numero: '',
+                                                    tel: '',
                                                     location: ''
                                                 })
                                                 setValue(newValue);
@@ -993,10 +993,10 @@ export default function Orders() {
                                                 <div class="form-group">
                                                     <TextField
                                                         autoComplete='off'
-                                                        value={inputsStates.numero}
+                                                        value={inputsStates.tel}
                                                         onChange={e => setInputsStates({
                                                             ...inputsStates,
-                                                            ['numero']: e.target.value
+                                                            ['tel']: e.target.value
                                                         })}
                                                         fullWidth label="Numero du client" variant="outlined" />
                                                 </div>

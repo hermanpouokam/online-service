@@ -162,6 +162,46 @@ export const product = [
         ]
     },
     {
+        nom: 'coca cola 1l',
+        fournisseur: 'CCGBC',
+        categorie: 'bg',
+        code: 'COK10p',
+        pu: 2893,
+        parfum: []
+    },
+    {
+        nom: 'Fanta 1l',
+        fournisseur: 'CCGBC',
+        categorie: 'bg',
+        code: 'FT10P',
+        pu: 2205,
+        parfum: [
+            'orange',
+            'Fruit rouge',
+            'Cocktail',
+        ]
+    },
+    {
+        nom: 'Fanta 0,5l',
+        fournisseur: 'CCGBC',
+        categorie: 'bg',
+        code: 'FT05P',
+        pu: 2720,
+        parfum: [
+            'orange',
+            'Fruit rouge',
+            'Cocktail',
+        ]
+    },
+    {
+        nom: 'Sprite 1l',
+        fournisseur: 'CCGBC',
+        categorie: 'bg',
+        code: 'SPR10P',
+        pu: 2877,
+        parfum: []
+    },
+    {
         nom: 'planet 1,25L',
         fournisseur: 'sp',
         categorie: 'bg',

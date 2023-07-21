@@ -104,8 +104,8 @@ export default function Invoice() {
                                 :
                                 <section class="section">
                                     <div class="section-body">
-                                        <div class="invoice" ref={contentRef}>
-                                            <div class="invoice-print">
+                                        <div class="invoice" >
+                                            <div class={`"invoice-print" ${!show && 'p-4'}`} ref={contentRef}>
                                                 <div class="row">
                                                     <div class="col-lg-12 text-dark">
                                                         <div class="invoice-title">
