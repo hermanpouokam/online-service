@@ -139,6 +139,10 @@ export default function NewProduct() {
             }).then(() => {
                 setLoading(false)
                 handleClick('success', 'Success', `${inputsValue.product} a été ajouté avec succès à votre stock`)
+                dispatch({
+                    type: 'REFRESH',
+                    payload: true
+                })
                 setTimeout(() => {
                     window.location.reload()
                 }, 3000);
@@ -166,6 +170,10 @@ export default function NewProduct() {
                     });
                     setLoading(false)
                     handleClick('success', 'Success', `${inputsValue.product} ${inputsValue.productParfum} a été ajouté avec succès à votre stock`)
+                    dispatch({
+                        type: 'REFRESH',
+                        payload: true
+                    })
                     setTimeout(() => {
                         window.location.reload()
                     }, 3000);
@@ -194,6 +202,10 @@ export default function NewProduct() {
                     }).then(() => {
                         setLoading(false)
                         handleClick('success', 'Success', `${inputsValue.product} ${inputsValue.productParfum} a été ajouté avec succès à votre stock`)
+                        dispatch({
+                            type: 'REFRESH',
+                            payload: true
+                        })
                         setTimeout(() => {
                             window.location.reload()
                         }, 3000);
@@ -205,6 +217,7 @@ export default function NewProduct() {
                 });
             }
         }
+
     }
 
     const handleRemoveInput = () => {

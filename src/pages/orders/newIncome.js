@@ -165,7 +165,6 @@ export default function NewIncome() {
             });
         })
         setStep('Mis à jour du stock...')
-
         dispatch({
             type: 'REFRESH',
             payload: true
