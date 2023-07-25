@@ -4,7 +4,7 @@ import Settings from '../settings/settings'
 import { stock as data, product } from '../../database'
 import { useStateValue } from '../../components/stateProvider'
 import CurrencyFormat from 'react-currency-format';
-import { addDoc, collection, doc, getDoc, serverTimestamp, setDoc, updateDoc } from 'firebase/firestore'
+import { addDoc, collection, doc, getDoc, increment, serverTimestamp, setDoc, updateDoc } from 'firebase/firestore'
 import { db } from '../../firebase'
 import { AlertTitle, Backdrop, Button, CircularProgress, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Slide, Snackbar, Typography, useMediaQuery, useTheme } from '@mui/material'
 import MuiAlert from '@mui/material/Alert';
@@ -125,19 +125,19 @@ export default function NewIncome() {
             if (el.productParfum) {
                 let productRef = doc(db, "stock", el.id);
                 await updateDoc(productRef, {
-                    stock: el.stock - el.qty,
-                    already: el.already + el.qty
+                    stock: increment(-el.qty),
+                    already: increment(el.qty)
                 });
                 productRef = doc(db, 'parfum', `${el.id}-${el.productParfum}`)
                 await updateDoc(productRef, {
-                    stock: el.stock - el.qty,
-                    already: el.already + el.qty
+                    stock: increment(-el.qty),
+                    already: increment(el.qty)
                 });
             } else {
                 const productRef = doc(db, "stock", el.id);
                 await updateDoc(productRef, {
-                    stock: el.stock - el.qty,
-                    already: el.already + el.qty
+                    stock: increment(-el.qty),
+                    already: increment(el.qty)
                 });
             }
         }
@@ -173,7 +173,7 @@ export default function NewIncome() {
         setTimeout(() => {
             setLoading(false)
             window.location.reload()
-        }, 1500);
+        }, 2000);
     }
 
     function liClicked(e, i) {

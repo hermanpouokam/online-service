@@ -414,16 +414,17 @@ export default function NewProduct() {
                                                                 ['productParfum']: '',
                                                             })
                                                             inputsValue.productCat == '' ?
-                                                                setFilteredArray(articles.filter(el => el.fournisseur == e.target.value))
+                                                                setFilteredArray(articles.filter(el => el.fournisseur.toLowerCase() == e.target.value.toLowerCase()))
                                                                 :
-                                                                setFilteredArray(articles.filter(el => el.fournisseur == e.target.value && el.categorie == inputsValue.productCat))
+                                                                setFilteredArray(articles.filter(el => el.fournisseur.toLowerCase() == e.target.value.toLowerCase() && el.categorie.toLowerCase() == inputsValue.productCat.toLowerCase()))
                                                         }}
                                                         value={inputsValue.supplier}
                                                         type="text" class="form-control phone-number" >
                                                         <option>Sélectionez un fournisseur</option>
                                                         <option value={'sabc'}>Brasserie du cameroun</option>
                                                         <option value={'sp'}>Source du pays</option>
-                                                        <option value={'ucb'}>UCB</option>
+                                                        <option value={'ucb'}>Union Camerounaise des Brasseries</option>
+                                                        <option value={'ccgbc'}>Coca Coca Gracedom Bottling Company</option>
                                                     </select>
                                                 </div>
                                             </div>

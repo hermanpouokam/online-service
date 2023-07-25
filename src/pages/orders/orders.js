@@ -85,6 +85,7 @@ export default function Orders() {
         const [load, setLoad] = useState(false)
         const [open1, setOpen1] = React.useState(false);
         const [errorP, setErrorP] = React.useState(null)
+
         const handleClickOpen1 = () => {
             setOpen1(true);
         };
@@ -110,7 +111,6 @@ export default function Orders() {
         const handleModifyQTy = async () => {
             for (let i = 0; i < modified.length; i++) {
                 const element = modified[i];
-
                 if (modifieQty[`qty-${element.id}`]) {
                     const qty = modifieQty[`qty-${element.id}`]
                     const productStock = stock.find(item => item.id === element.productId)
@@ -118,30 +118,30 @@ export default function Orders() {
                     if (element.parfum !== null) {
                         const parfumStock = parfum.find(item => item.id === `${element.productId}-${element.parfum}`)
                         if (qtyToSet < 0 && parfumStock.stock < qtyToSet) {
-                            return alert(`vous navez pas assez ${element.nom} en stock`)
+                            return alert(`vous navez pas assez  de ${element.nom} en stock`)
                         }
                         let productRef = doc(db, "stock", element.productId);
                         let invoiceProductRef = doc(db, "invoicesProduct", element.id);
                         await updateDoc(productRef, {
-                            stock: productStock.stock + qtyToSet,
-                            already: productStock.already - qtyToSet
+                            stock: increment(qtyToSet),
+                            already: increment(-qtyToSet)
                         });
                         productRef = doc(db, 'parfum', `${element.productId}-${element.parfum}`)
                         await updateDoc(productRef, {
-                            stock: parfumStock.stock + qtyToSet,
-                            already: parfumStock.already - qtyToSet
+                            stock: increment(qtyToSet),
+                            already: increment(-qtyToSet)
                         });
                         await updateDoc(invoiceProductRef, {
                             qty: qty,
                         });
                     } else {
                         if (qtyToSet < 0 && productStock.stock < qtyToSet) {
-                            return alert(`vous navez pas assez ${element.nom} en stock`)
+                            return alert(`vous navez pas assez de ${element.nom} en stock`)
                         }
                         const productRef = doc(db, "stock", element.productId);
                         await updateDoc(productRef, {
-                            stock: productStock.stock + qtyToSet,
-                            already: productStock.already - qtyToSet
+                            stock: increment(qtyToSet),
+                            already: increment(-qtyToSet)
                         });
                         let invoiceProductRef = doc(db, "invoicesProduct", element.id);
                         await updateDoc(invoiceProductRef, {

@@ -26,7 +26,7 @@ export default function Home() {
   const [weekDatas, setWeekDatas] = React.useState([])
 
 
-  const capital = stock.reduce((acc, currentValue) => {
+  const capital = stock?.reduce((acc, currentValue) => {
     const amount = products.find(el => el.id == currentValue.id).pu
     const sum = acc + (amount * currentValue.stock)
     return sum
@@ -40,8 +40,8 @@ export default function Home() {
     getSpends().then(data => setSpends(data))
   }, [])
 
-  const dettes = orders.filter(el => el.amountToPaid !== el.paid).reduce((acc, currentVal) => acc + (currentVal.amountToPaid - currentVal.paid), 0)
-  const benef = orders.reduce((acc, curVal) => acc + curVal.directProfit, 0)
+  const dettes = orders?.filter(el => el.amountToPaid !== el.paid).reduce((acc, currentVal) => acc + (currentVal.amountToPaid - currentVal.paid), 0)
+  const benef = orders?.reduce((acc, curVal) => acc + curVal.directProfit, 0)
 
   const dash = [
     {
@@ -59,7 +59,7 @@ export default function Home() {
       'text': 'Montant en caisse',
       'icon': 'fas fa-dollar-sign',
       'bgColor': 'l-bg-green',
-      'number': enterprise.caisse,
+      'number': enterprise?.caisse,
       'lastUpdated': 'last month',
       'numberColor': 'red',
       'increase': '10',
@@ -79,7 +79,7 @@ export default function Home() {
       'text': 'Valeur totale du capital',
       'icon': 'far fa-money-bill-alt',
       'bgColor': 'l-bg-orange',
-      'number': (capital + enterprise.caisse + dettes),
+      'number': (capital + enterprise?.caisse + dettes),
       'lastUpdated': 'last month',
       'numberColor': 'red',
       'increase': '10',
@@ -89,7 +89,7 @@ export default function Home() {
       'text': 'Listing de clients',
       'icon': 'fas fa-user',
       'bgColor': 'l-bg-purple',
-      'number': customer.length,
+      'number': customer?.length,
       'lastUpdated': '1 semaine',
       'numberColor': 'red',
       'increase': '10',
@@ -109,7 +109,7 @@ export default function Home() {
       'text': 'Depenses mensuelles',
       'icon': 'fas fa-dollar-sign',
       'bgColor': 'l-bg-cyan',
-      'number': spends.filter(el => moment(el.createdAt.toDate()).format('MM') === moment().format('MM')).reduce((acc, curVal) => acc + curVal.amount, 0),
+      'number': spends?.filter(el => moment(el.createdAt.toDate()).format('MM') === moment().format('MM')).reduce((acc, curVal) => acc + curVal.amount, 0),
       'lastUpdated': 'last month',
       'numberColor': 'red',
       'increase': '10',
@@ -119,7 +119,7 @@ export default function Home() {
       'text': 'Ristournes estimées du mois',
       'icon': 'fas fa-box',
       'bgColor': 'l-bg-green',
-      'number': '1,562',
+      'number': '0',
       'lastUpdated': 'last month',
       'numberColor': 'red',
       'increase': '10',

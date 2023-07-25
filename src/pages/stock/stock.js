@@ -16,7 +16,7 @@ export default function Stock() {
 
     useEffect(() => {
         if (params.category && params.category !== 'All') {
-            const supplier = products.filter(el => el.fournisseur == params.category.toLowerCase()).map(el => { return el.id })
+            const supplier = products.filter(el => el.fournisseur.toLowerCase() == params.category.toLowerCase()).map(el => { return el.id })
             setStocks(stock.filter(product => supplier.includes(product.id)))
         } else if (params.category && params.category == 'All') {
             setStocks(stock)
