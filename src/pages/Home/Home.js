@@ -28,7 +28,8 @@ export default function Home() {
 
   const capital = stock?.reduce((acc, currentValue) => {
     const amount = products.find(el => el.id == currentValue.id).pu
-    const sum = acc + (amount * currentValue.stock)
+    let sum = 0
+    sum = acc + (parseInt(amount) * currentValue.stock)
     return sum
   }, 0)
 
@@ -48,10 +49,10 @@ export default function Home() {
       'text': 'Valeur du stock',
       'icon': 'fas fa-box',
       'bgColor': 'l-bg-cyan',
-      'number': capital,
+      'number': capital ? capital : 0,
       'lastUpdated': '2 jours',
       'numberColor': 'red',
-      'increase': '10'
+      'increase': '0'
     },
     {
       'id': '2',
@@ -61,7 +62,7 @@ export default function Home() {
       'number': enterprise?.caisse,
       'lastUpdated': 'last month',
       'numberColor': 'red',
-      'increase': '10',
+      'increase': '0',
     },
     {
       'id': '8',
@@ -71,17 +72,17 @@ export default function Home() {
       'number': dettes,
       'lastUpdated': 'last month',
       'numberColor': 'red',
-      'increase': '10',
+      'increase': '0',
     },
     {
       'id': '3',
       'text': 'Valeur totale du capital',
       'icon': 'far fa-money-bill-alt',
       'bgColor': 'l-bg-orange',
-      'number': (capital + enterprise?.caisse + dettes),
+      'number': capital ? (capital + enterprise?.caisse + dettes) : 0,
       'lastUpdated': 'last month',
       'numberColor': 'red',
-      'increase': '10',
+      'increase': '0',
     },
     {
       'id': '7',
@@ -91,7 +92,7 @@ export default function Home() {
       'number': customer?.length,
       'lastUpdated': '1 semaine',
       'numberColor': 'red',
-      'increase': '10',
+      'increase': '0',
     },
     {
       'id': '4',
@@ -101,7 +102,7 @@ export default function Home() {
       'number': benef,
       'lastUpdated': 'last month',
       'numberColor': 'red',
-      'increase': '10',
+      'increase': '0',
     },
     {
       'id': '6',
@@ -111,7 +112,7 @@ export default function Home() {
       'number': spends?.filter(el => moment(el.createdAt.toDate()).format('MM') === moment().format('MM')).reduce((acc, curVal) => acc + curVal.amount, 0),
       'lastUpdated': 'last month',
       'numberColor': 'red',
-      'increase': '10',
+      'increase': '0',
     },
     {
       'id': '9',
@@ -121,7 +122,7 @@ export default function Home() {
       'number': '0',
       'lastUpdated': 'last month',
       'numberColor': 'red',
-      'increase': '10',
+      'increase': '0',
     },
   ]
 

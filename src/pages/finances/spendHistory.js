@@ -11,10 +11,16 @@ export default function FinancesHistory() {
 
     const [date, setDate] = useState(moment().format('YYYY-MM-DD'))
     const [spendDoc, setSpendDoc] = React.useState(null)
+    const [spendDoc1, setSpendDoc1] = React.useState(null)
+
 
     const [{ users }, dispatch] = useStateValue()
 
     useEffect(() => {
+
+        let url = window.location.href
+        let param = url.split('?')[1]
+        let paramVal = param?.split('=')[1]
         const _getSpendHistory = async () => {
             const q = query(collection(db, "spends"), orderBy('createdAt', 'desc'));
             const querySnapshot = await getDocs(q);
@@ -23,12 +29,28 @@ export default function FinancesHistory() {
                 const data = doc.data()
                 return { id, ...data }
             });
+
+            setSpendDoc1(array)
+
+            if (param) {
+                array = array.filter(el => {
+                    const date = moment(el.createdAt.toDate()).format('YYYY-MM-DD')
+                    return date == paramVal
+                })
+
+            }
             setSpendDoc(array)
         }
 
         _getSpendHistory()
 
     }, [])
+
+    const _handleClick = (e) => {
+        e.preventDefault()
+
+    }
+
     const handleDateChanged = (e) => {
         setDate(e.target.value)
     }
@@ -48,14 +70,15 @@ export default function FinancesHistory() {
                                         <div class="card-header">
                                             <h4>Historique de dépenses</h4>
                                             <div class="card-header-action row">
-                                                <form class="card-header-form">
+                                                <form class="card-header-form" >
                                                     <div class="input-group">
                                                         {
                                                             spendDoc !== null ?
                                                                 <input
                                                                     type="date" class="form-control"
-                                                                    min={moment(spendDoc[0]?.createdAt.toDate()).format('YYYY-MM-DD')}
-                                                                    max={moment(spendDoc[spendDoc.length - 1]?.createdAt.toDate()).format('YYYY-MM-DD')}
+                                                                    name='date'
+                                                                    min={moment(spendDoc1[0]?.createdAt.toDate()).format('YYYY-MM-DD')}
+                                                                    max={moment(spendDoc1[spendDoc1.length - 1]?.createdAt.toDate()).format('YYYY-MM-DD')}
                                                                     value={date}
                                                                     onChange={handleDateChanged}
                                                                 />
@@ -90,7 +113,6 @@ export default function FinancesHistory() {
                                                             spendDoc === null ?
                                                                 [...Array(5).fill(0)].map(() => (
                                                                     <tr>
-                                                                        <td><Skeleton animation="wave" /></td>
                                                                         <td><Skeleton animation="wave" /></td>
                                                                         <td><Skeleton animation="wave" /></td>
                                                                         <td><Skeleton animation="wave" /></td>
