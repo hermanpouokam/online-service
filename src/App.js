@@ -150,7 +150,7 @@ const router = createBrowserRouter([
     errorElement: <ErrorPage />
   },
   {
-    path: '/finance/spend/history',
+    path: '/finances/spend/history',
     element: <FinancesHistory />,
     errorElement: <ErrorPage />
   },

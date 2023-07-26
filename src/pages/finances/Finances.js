@@ -113,7 +113,7 @@ export default function Finances() {
                               <span class="text-nowrap">De plus qu'hier</span>
                             </p>
                             <hr />
-                            <a href='/finance/spend/history' class='btn btn-icon mr-2 btn-secondary'>
+                            <a href='/finances/spend/history' class='btn btn-icon mr-2 btn-secondary'>
                               <i class="fa fa-history"></i>
                             </a>
                             <button data-toggle="modal" data-target="#exampleModal" class='btn btn-icon btn-primary'>

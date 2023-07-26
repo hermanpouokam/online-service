@@ -36,7 +36,7 @@ export default function Orders() {
 
     const [open, setOpen] = React.useState(false);
     const [scroll, setScroll] = React.useState('paper');
-    const [{ customer, stock, parfum, employee, user }, dispatch] = useStateValue()
+    const [{ customer, stock, parfum, employee, user, products }, dispatch] = useStateValue()
     const [inputsStates, setInputsStates] = useState({
         nom: '',
         tel: '',
@@ -69,6 +69,7 @@ export default function Orders() {
     };
 
     const descriptionElementRef = React.useRef(null);
+
 
     function InvoiceCard(props) {
 
@@ -109,8 +110,12 @@ export default function Orders() {
         };
 
         const handleModifyQTy = async () => {
+            let _remBen = 0
+
             for (let i = 0; i < modified.length; i++) {
                 const element = modified[i];
+
+
                 if (modifieQty[`qty-${element.id}`]) {
                     const qty = modifieQty[`qty-${element.id}`]
                     const productStock = stock.find(item => item.id === element.productId)
@@ -118,7 +123,7 @@ export default function Orders() {
                     if (element.parfum !== null) {
                         const parfumStock = parfum.find(item => item.id === `${element.productId}-${element.parfum}`)
                         if (qtyToSet < 0 && parfumStock.stock < qtyToSet) {
-                            return alert(`vous navez pas assez  de ${element.nom} en stock`)
+                            return alert(`vous n'avez pas assez  de ${element.nom} en stock`)
                         }
                         let productRef = doc(db, "stock", element.productId);
                         let invoiceProductRef = doc(db, "invoicesProduct", element.id);
@@ -134,9 +139,10 @@ export default function Orders() {
                         await updateDoc(invoiceProductRef, {
                             qty: qty,
                         });
+
                     } else {
                         if (qtyToSet < 0 && productStock.stock < qtyToSet) {
-                            return alert(`vous navez pas assez de ${element.nom} en stock`)
+                            return alert(`vous n'avez pas assez de ${element.nom} en stock`)
                         }
                         const productRef = doc(db, "stock", element.productId);
                         await updateDoc(productRef, {
@@ -240,7 +246,10 @@ export default function Orders() {
             try {
                 let invoiceProductRef = doc(db, "invoices", item.id);
                 await updateDoc(doc(db, `dailyclosure`, `${moment().format('DDMMYYYY')}`), {
-                    marge: increment(item.directProfit),
+                    marge: increment( arrayProduct.reduce((acc, val) => {
+                        const product = products.find(el => el.id === val.productId);
+                        return acc + ((val.price - product.pu) * val.qty)
+                    }, 0)),
                     caisse: increment(allPaid),
                 });
                 await updateDoc(doc(db, `entreprise`, 'zta23TYCfjPSlR9wZf7r'), {
@@ -249,6 +258,10 @@ export default function Orders() {
                 await updateDoc(invoiceProductRef, {
                     amountToPaid: productOfArray(arrayProduct),
                     paid: parseInt(allPaid),
+                    directProfit: arrayProduct.reduce((acc, val) => {
+                        const product = products.find(el => el.id === val.productId);
+                        return acc + ((val.price - product.pu) * val.qty)
+                    }, 0),
                     deliverer,
                     delivered: true
                 });
@@ -278,7 +291,6 @@ export default function Orders() {
                 window.location.reload()
             } catch (error) {
                 setLoad(false)
-                console.log(error)
             }
         }
 
@@ -562,7 +574,14 @@ export default function Orders() {
                 <th class='text-capitalize'>{item.customerId == 'client divers' ? item.customerName : customer.find(el => el.id == item.customerId).nom}</th>
                 <td>{productOfArray(arrayProduct)}</td>
                 <td>{moment(item.createdAt).format("DD-MM-YYYY • HH:mm")}</td>
-                <td>{item.directProfit}</td>
+                <td>
+                    {
+                        arrayProduct.reduce((acc, val) => {
+                            const product = products.find(el => el.id === val.productId);
+                            return acc + ((val.price - product.pu) * val.qty)
+                        }, 0)
+                    }
+                </td>
                 <td scope="col" >
                     {
                         item.delivered ?

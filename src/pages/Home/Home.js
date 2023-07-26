@@ -35,7 +35,6 @@ export default function Home() {
   useEffect(() => {
     getInvoices().then(data => {
       setOrders(data)
-      console.log(data.map(el => moment(el.createdAt.toDate()).format('L')))
     })
     getSpends().then(data => setSpends(data))
   }, [])

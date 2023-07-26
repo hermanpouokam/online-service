@@ -364,7 +364,6 @@ export default function NewIncome() {
                             <Typography color={'#000'}>{step}</Typography>
                         </Backdrop>
                         <div class='col-12' style={{ display: 'flex', justifyContent: "center", alignItems: 'center' }}>
-
                             <div class="col-xs-12 col-sm-12 col-md-12 col-lg-11">
                                 <div class="card" style={{ position: 'relative' }}>
                                     <div class="card-header ">
