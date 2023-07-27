@@ -31,7 +31,7 @@ export default function FinancesHistory() {
             });
 
             setSpendDoc1(array)
-
+            
             if (param) {
                 array = array.filter(el => {
                     const date = moment(el.createdAt.toDate()).format('YYYY-MM-DD')
@@ -77,8 +77,8 @@ export default function FinancesHistory() {
                                                                 <input
                                                                     type="date" class="form-control"
                                                                     name='date'
-                                                                    min={moment(spendDoc1[0]?.createdAt.toDate()).format('YYYY-MM-DD')}
-                                                                    max={moment(spendDoc1[spendDoc1.length - 1]?.createdAt.toDate()).format('YYYY-MM-DD')}
+                                                                    min={moment(spendDoc[0]?.createdAt.toDate()).format('YYYY-MM-DD')}
+                                                                    max={moment(spendDoc[spendDoc.length - 1]?.createdAt.toDate()).format('YYYY-MM-DD')}
                                                                     value={date}
                                                                     onChange={handleDateChanged}
                                                                 />

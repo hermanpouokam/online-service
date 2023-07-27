@@ -1,15 +1,23 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import Navbar from './navbar'
 import { onAuthStateChanged } from 'firebase/auth'
 import { auth } from '../../firebase'
+import { useStateValue } from '../../components/stateProvider'
 
 export default function Sidebar() {
 
     let getLocation = useLocation()
     let res = getLocation.pathname.split('/')
     let location = `/${res[1]}`
-   
+    const [{ }, dispatch] = useStateValue()
+
+    useEffect(() => {
+        dispatch({
+            type: 'REFRESH',
+            payload: true
+        })
+    }, [])
 
     const links = [
         {

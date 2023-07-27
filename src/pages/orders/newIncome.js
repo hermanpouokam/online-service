@@ -148,10 +148,7 @@ export default function NewIncome() {
             customernum: customerInfo?.tel,
             createdAt: serverTimestamp(),
             delivered: false,
-            directProfit: articles.reduce((acc, val) => {
-                const product = products.find(el => el.id === val.id);
-                return acc + ((val.pu - product.pu) * val.qty)
-            }, 0)
+            directProfit: 0
         });
         articles.forEach(async (el) => {
             const docRefProducts = await addDoc(collection(db, "invoicesProduct"), {
