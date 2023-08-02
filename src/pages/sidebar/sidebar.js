@@ -79,7 +79,7 @@ export default function Sidebar() {
     return (
         <div>
             <Navbar />
-            <div class="main-sidebar sidebar-style-2">
+            <div class="main-sidebar sidebar-style-2" >
                 <aside id="sidebar-wrapper">
                     <div class="sidebar-brand">
                         <a href="/?from=auth&klm=user&to=dashboard&rt=1&tk=Hxjq8i9iJ9uh1hdnkl">

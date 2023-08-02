@@ -169,7 +169,7 @@ export default function Home() {
                   <ChartWiget orders={orders} />
                 </div>
                 <div class='col-12 col-sm-12 col-lg-4'>
-                  <div class=''>
+                  {/* <div class=''>
                     <div class="card">
                       <div class="card-header">
                         <h4>Clients</h4>
@@ -200,7 +200,7 @@ export default function Home() {
                           <ListItem onClick={() => alert('clicked')}>
                             <ListItemAvatar>
                               <Avatar>
-                                {/* <ImageIcon /> */}
+                                <ImageIcon /> 
                               </Avatar>
                             </ListItemAvatar>
                             <ListItemText primary="Photos" secondary="Jan 9, 2014" />
@@ -209,7 +209,7 @@ export default function Home() {
                           <ListItem>
                             <ListItemAvatar>
                               <Avatar>
-                                {/* <WorkIcon /> */}
+                                 <WorkIcon /> 
                               </Avatar>
                             </ListItemAvatar>
                             <ListItemText primary="Work" secondary="Jan 7, 2014" />
@@ -218,7 +218,7 @@ export default function Home() {
                           <ListItem>
                             <ListItemAvatar>
                               <Avatar>
-                                {/* <BeachAccessIcon /> */}
+                                 <BeachAccessIcon /> 
                               </Avatar>
                             </ListItemAvatar>
                             <ListItemText primary="Vacation" secondary="July 20, 2014" />
@@ -227,7 +227,7 @@ export default function Home() {
                           <ListItem>
                             <ListItemAvatar>
                               <Avatar>
-                                {/* <BeachAccessIcon /> */}
+                                {/* <BeachAccessIcon /> 
                               </Avatar>
                             </ListItemAvatar>
                             <ListItemText primary="Vacation" secondary="July 20, 2014" />
@@ -236,7 +236,7 @@ export default function Home() {
                           <ListItem>
                             <ListItemAvatar>
                               <Avatar>
-                                {/* <BeachAccessIcon /> */}
+                                <BeachAccessIcon /> 
                               </Avatar>
                             </ListItemAvatar>
                             <ListItemText primary="Vacation" secondary="July 20, 2014" />
@@ -254,7 +254,7 @@ export default function Home() {
 
                       </div>
                     </div>
-                  </div>
+                  </div> */}
                 </div>
               </div>
             </section>

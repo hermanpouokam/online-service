@@ -9,7 +9,7 @@ import moment from 'moment'
 
 export default function Navbar() {
 
-    const [{ user, refresh, enterprise }, dispatch] = useStateValue()
+    const [{ user, refresh, enterprise, users }, dispatch] = useStateValue()
     const [loading, setLoading] = useState(true)
     const navigate = useNavigate()
 
@@ -29,6 +29,12 @@ export default function Navbar() {
             }
         });
     }, [user])
+    useEffect(() => {
+        if (user) {
+            return
+        }
+        window.location.assign('/auth/login')
+    }, [])
 
     useEffect(() =>
         async () => {
@@ -166,6 +172,7 @@ export default function Navbar() {
         }).catch((e) => console.log(e))
     }
 
+
     useEffect(() => {
         const startDay = async () => {
             const docRef = doc(db, "dailyclosure", moment().format('DDMMYYYY'));
@@ -239,19 +246,15 @@ export default function Navbar() {
         <nav class="navbar navbar-expand-lg main-navbar sticky">
             <div class="form-inline mr-auto">
                 <ul class="navbar-nav mr-3">
+                    <li><a href="#" data-toggle="sidebar" class="nav-link nav-link-lg
+									collapse-btn"> <i data-feather="align-justify"></i></a></li>
+                    <li><a href="#" class="nav-link nav-link-lg fullscreen-btn">
+                        <i data-feather="maximize"></i>
+                    </a></li>
                     <li>
-                        <a data-toggle="sidebar" class="nav-link nav-link-lg collapse-btn text-dark"> <i class="material-icons">menu</i>
-                        </a>
-                    </li>
-                    <li>
-                        <a class="nav-link nav-link-lg fullscreen-btn">
-                            <i class="material-icons">fullscreen</i>
-                        </a>
-                    </li>
-                    <li class='ml-3'>
                         <form class="form-inline mr-auto">
                             <div class="search-element">
-                                <input class="form-control " type="search" placeholder="Rechercher" aria-label="search" data-width="200" />
+                                <input class="form-control" type="search" placeholder="Search" aria-label="Search" data-width="200" />
                                 <button class="btn" type="submit">
                                     <i class="fas fa-search"></i>
                                 </button>
@@ -313,7 +316,7 @@ export default function Navbar() {
                     class="nav-link dropdown-toggle nav-link-lg nav-link-user"> <img alt="image" src="assets/img/user.png"
                         class="user-img-radious-style" /> <span class="d-sm-none d-lg-inline-block"></span></a>
                     <div class="dropdown-menu dropdown-menu-right pullDown">
-                        <div class="dropdown-title">Hello {user.name} {user.surname}</div>
+                        <div class="dropdown-title">Hello {users.find(element => element.id === user.uid)?.name} {users.find(element => element.id === user.uid)?.surname}</div>
                         <a href="profile.html" class="dropdown-item has-icon"> <i class="far
 										fa-user"></i> Profil
                         </a>

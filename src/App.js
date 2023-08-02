@@ -34,6 +34,7 @@ const router = createBrowserRouter([
   {
     path: "/",
     element: <Home />,
+    errorElement: <ErrorPage />
   },
   {
     path: '/finances',
@@ -91,7 +92,7 @@ const router = createBrowserRouter([
   },
   {
     path: '/params',
-    element: <Params />,
+    element: <Update />,
     errorElement: <ErrorPage />
   },
   {
@@ -141,7 +142,7 @@ const router = createBrowserRouter([
   },
   {
     path: '/users',
-    element: <Users />,
+    element: <Update />,
     errorElement: <ErrorPage />
   },
   {
