@@ -23,7 +23,7 @@ export default function Sidebar() {
         {
             'name': 'home',
             'icon': 'desktop_windows',
-            'link': '/?from=sidebar&klm=user&to=dashboard&rt=1&tk=Hxjq8i9iJ9uh1hdnkl',
+            'link': '/',
             'text': 'Tableau de bord',
         },
         {

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useStateValue } from '../../components/stateProvider'
 import { onAuthStateChanged, signOut } from 'firebase/auth'
 import { auth, db } from '../../firebase'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { product } from '../../database'
 import { collection, doc, getDoc, getDocs, onSnapshot, query, serverTimestamp, setDoc, where } from 'firebase/firestore'
 import moment from 'moment'
@@ -172,7 +172,6 @@ export default function Navbar() {
         }).catch((e) => console.log(e))
     }
 
-
     useEffect(() => {
         const startDay = async () => {
             const docRef = doc(db, "dailyclosure", moment().format('DDMMYYYY'));
@@ -236,18 +235,19 @@ export default function Navbar() {
     }, [refresh])
 
 
-    if (!user, loading) {
-        return (
-            <div class="loader"></div>
-        )
-    }
+    // if (!user, loading) {
+    //     return (
+    //         <div class="loader"></div>
+    //     )
+    // }
 
     return (
         <nav class="navbar navbar-expand-lg main-navbar sticky">
             <div class="form-inline mr-auto">
                 <ul class="navbar-nav mr-3">
-                    <li><a href="#" data-toggle="sidebar" class="nav-link nav-link-lg
-									collapse-btn"> <i data-feather="align-justify"></i></a></li>
+                    <li><a data-toggle="sidebar" class="nav-link nav-link-lg collapse-btn" id='sidebar' >
+                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 20 20"><path fill="gray" d="M2 4.25a.75.75 0 0 1 .75-.75h14.5a.75.75 0 0 1 0 1.5H2.75A.75.75 0 0 1 2 4.25Zm0 5a.75.75 0 0 1 .75-.75h14.5a.75.75 0 0 1 0 1.5H2.75A.75.75 0 0 1 2 9.25Zm.75 4.25a.75.75 0 0 0 0 1.5h14.5a.75.75 0 0 0 0-1.5H2.75Z" /></svg>
+                    </a></li>
                     <li><a href="#" class="nav-link nav-link-lg fullscreen-btn">
                         <i data-feather="maximize"></i>
                     </a></li>
@@ -304,7 +304,7 @@ export default function Navbar() {
                         <div class="dropdown-list-content dropdown-list-icons">
                             <a href="#" class="dropdown-item">
                                 <span class="dropdown-item-icon bg-info text-white"> <i class="fas fa-bell"></i></span>
-                                <span class="dropdown-item-desc"> Welcome to Otika template! <span class="time">Yesterday</span></span>
+                                <span class="dropdown-item-desc">Bienvenu sur Online Service ! <span class="time">{moment(users.find(element => element.id === user.uid)?.createdAt).format('L')}</span></span>
                             </a>
                         </div>
                         <div class="dropdown-footer text-center">

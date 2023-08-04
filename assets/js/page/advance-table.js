@@ -1,4 +1,4 @@
-// "use strict";
+"use strict";
 
 $("[data-checkboxes]").each(function () {
   var me = $(this),
