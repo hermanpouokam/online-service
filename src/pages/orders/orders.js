@@ -246,7 +246,7 @@ export default function Orders() {
             try {
                 let invoiceProductRef = doc(db, "invoices", item.id);
                 await updateDoc(doc(db, `dailyclosure`, `${moment().format('DDMMYYYY')}`), {
-                    marge: increment( arrayProduct.reduce((acc, val) => {
+                    marge: increment(arrayProduct.reduce((acc, val) => {
                         const product = products.find(el => el.id === val.productId);
                         return acc + ((val.price - product.pu) * val.qty)
                     }, 0)),
@@ -571,7 +571,7 @@ export default function Orders() {
                 </Dialog>
                 <td>{i + 1}</td>
                 <th scope="row">{item.invoiceNum}</th>
-                <th class='text-capitalize'>{item.customerId == 'client divers' ? item.customerName : customer.find(el => el.id == item.customerId).nom}</th>
+                <th class='text-capitalize'>{item.customerId == 'client divers' ? item.customerName ? item.customerName : 'Client divers' : customer.find(el => el.id == item.customerId).nom}</th>
                 <td>{productOfArray(arrayProduct)}</td>
                 <td>{moment(item.createdAt).format("DD-MM-YYYY • HH:mm")}</td>
                 <td>

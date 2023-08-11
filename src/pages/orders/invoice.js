@@ -13,7 +13,7 @@ import { Skeleton } from '@mui/material'
 
 export default function Invoice() {
 
-    const [{ customer, employee, stock }, dispatch] = useStateValue()
+    const [{ customer, users, stock }, dispatch] = useStateValue()
 
     const contentRef = useRef()
     const [show, setShow] = useState(true)
@@ -98,7 +98,7 @@ export default function Invoice() {
                             !data || !invoicesProduct || !groupedArray ?
                                 <div class='card'>
                                     <div class='card-body'>
-                                        <Skeleton variant="rounded" animation='wave' sx={{ width: '73vw', height: '83vh' }} />
+                                        <Skeleton variant="rounded" animation='wave' sx={{ width: '80vw', height: '83vh' }} />
                                     </div>
                                 </div>
                                 :
@@ -110,21 +110,21 @@ export default function Invoice() {
                                                     <div class="col-lg-12 text-dark">
                                                         <div class="invoice-title">
                                                             <h3 class="text-center text-uppercase">Le kilombo depot</h3>
-                                                            <p class='text-center h6'>TEL: 677788899 / Ngodi-bakoko, Ari, Village</p>
+                                                            <p class='text-center h6 ' style={{ fontWeight: 800 }}>TEL: 677788899 / Ngodi-bakoko, Ari, Village</p>
                                                         </div>
                                                         <hr />
                                                         <div class="row">
                                                             <div class="col-md-6">
                                                                 <address style={{ fontSize: 16 }}>
                                                                     <strong>Facture N°{data.invoiceNum}</strong><br />
-                                                                    <strong>Date</strong>: {moment(data.createdAt.toDate()).format('DD/MM/YYYY • HH:mm')}<br />
+                                                                    <strong>Date</strong>: <strong>{moment(data.createdAt.toDate()).format('DD/MM/YYYY • HH:mm')}</strong><br />
                                                                     {/* <strong>Livrée</strong>: {data.delivered == true ? 'oui' : 'non'}<br />
                                                             <strong>Livreur</strong>: {data.delivered == true ? employee.find(item => item.id == data.deliverer).surname : 'NaN'}<br /> */}
                                                                 </address>
                                                             </div>
                                                             <div class="col-md-6 text-md-right">
                                                                 <address style={{ fontSize: 16 }}>
-                                                                    Nom du client: <strong>{data.customerName}</strong><br />
+                                                                    Nom du client: <strong>{data.customerName ? data.customerName : 'client divers'}</strong><br />
                                                                     Contact: <strong>{data.customerId == 'client divers' ? data.customerNum ? data.customerNum : 'NaN' : customer.find(item => item.id == data.customerId).tel.map((el, index) => { return `${el} ${index == 0 ? ' / ' : ''}` })}</strong><br />
                                                                     <strong>Ngodi-bakoko, Douala</strong><br />
                                                                 </address>
@@ -160,11 +160,11 @@ export default function Invoice() {
                                                                     {
                                                                         Object.keys(groupedArray).map((group) => (
                                                                             <tr>
-                                                                                <td class='text-center'>{1}</td>
-                                                                                <td class="text-center">{stock.find(it => it.id == group).nom}</td>
-                                                                                <td class="text-center">{groupedArray[group][0].price}</td>
-                                                                                <td class="text-center">{sumArray(groupedArray[group])}</td>
-                                                                                <td class="text-right">{groupedArray[group][0].price * sumArray(groupedArray[group])}</td>
+                                                                                <td class='text-center' style={{ fontWeight: 800 }}>{1}</td>
+                                                                                <td class="text-center" style={{ fontWeight: 800 }}>{stock.find(it => it.id == group).nom}</td>
+                                                                                <td class="text-center" style={{ fontWeight: 800 }}>{groupedArray[group][0].price}</td>
+                                                                                <td class="text-center" style={{ fontWeight: 800 }}>{sumArray(groupedArray[group])}</td>
+                                                                                <td class="text-right " style={{ fontWeight: 800 }}>{groupedArray[group][0].price * sumArray(groupedArray[group])}</td>
                                                                             </tr>
                                                                         ))
                                                                     }
@@ -172,9 +172,9 @@ export default function Invoice() {
                                                                     <tr>
                                                                         <td></td>
                                                                         <td></td>
-                                                                        <td class="h6 text-center">Total</td>
-                                                                        <td class="text-center">{sumArray(invoicesProduct)}</td>
-                                                                        <td class="text-right h6"><CurrencyFormat CurrencyFormat value={productOfArray(invoicesProduct)} displayType={'text'} thousandSeparator={true} /></td>
+                                                                        <td class="h6 text-center" style={{ fontWeight: 800 }}>Total</td>
+                                                                        <td class="text-center" style={{ fontWeight: 800 }}>{sumArray(invoicesProduct)}</td>
+                                                                        <td class="text-right h6" style={{ fontWeight: 800 }}><CurrencyFormat CurrencyFormat value={productOfArray(invoicesProduct)} displayType={'text'} thousandSeparator={true} /></td>
                                                                     </tr>
                                                                 </tbody>
                                                             </table>
@@ -183,19 +183,19 @@ export default function Invoice() {
                                                 </div>
                                                 <div class='row'>
                                                     <div class='col-6 mt-4' style={{ marginBottom: '85px' }}>
-                                                        <p class='text-center'>Client: <span class='h6 ml-1 text-capitalize' style={{ fontWeight: 'bold' }}>{data.customerName}</span></p>
+                                                        <p class='text-center'>Client: <span class='h6 ml-1 text-capitalize' style={{ fontWeight: 'bold' }}>{data.customerName ? data.customerName : 'client divers'}</span></p>
                                                     </div>
                                                     <div class='col-6 mt-4' style={{ marginBottom: '85px' }}>
-                                                        <p class='text-center'>Opérateur: <span class='h6 ml-1 text-capitalize' style={{ fontWeight: 'bold' }}>Nadine</span></p>
+                                                        <p class='text-center'>Opérateur: <span class='h6 ml-1 text-capitalize' style={{ fontWeight: 'bold' }}>{users.find(el => el.id == data.userId)?.name}{' '}{users.find(el => el.id == data.userId)?.surname}</span></p>
                                                     </div>
                                                 </div>
                                                 <hr />
                                                 <div class='row'>
-                                                    <span class='col-5 text-left' style={{ fontSize: 12 }}>
+                                                    <span class='col-5 text-left' style={{ fontSize: 12, fontWeight: 800 }}>
                                                         Nb:les produits vendus ne sont ni échangés ni remboursés
                                                     </span>
                                                     <span class='col-4 text-center' style={{ fontSize: 12 }}>
-                                                        <strong>Online Service</strong> powered by <strong>Interact &copy;</strong>,
+                                                        <strong>Online Service</strong> by <strong>Interact &copy;</strong>,
                                                     </span>
                                                     <span class='col-3 text-right' style={{ fontSize: 12 }}>
                                                         <strong>{!show && moment().format('DD/MM/YYYY • HH:mm')}</strong>

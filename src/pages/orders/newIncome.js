@@ -5,11 +5,12 @@ import { stock as data, product } from '../../database'
 import { useStateValue } from '../../components/stateProvider'
 import CurrencyFormat from 'react-currency-format';
 import { addDoc, collection, doc, getDoc, increment, serverTimestamp, setDoc, updateDoc } from 'firebase/firestore'
-import { db } from '../../firebase'
+import { auth, db } from '../../firebase'
 import { AlertTitle, Backdrop, Button, CircularProgress, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Slide, Snackbar, Typography, useMediaQuery, useTheme } from '@mui/material'
 import MuiAlert from '@mui/material/Alert';
 import { getRandomNumber } from '../../components/functions/randomNumber'
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
+import { onAuthStateChanged } from 'firebase/auth'
 
 const Alert = React.forwardRef(function Alert(props, ref) {
     return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
@@ -38,6 +39,7 @@ export default function NewIncome() {
     const [des, setDes] = useState(null)
     const [qty, setQty] = useState(0)
     const [open, setOpen] = useState(false);
+    const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(false)
     const [loading1, setLoading1] = useState(true)
     const [active, setActive] = useState(false)
@@ -52,6 +54,13 @@ export default function NewIncome() {
     const [productPrice, setProductPrice] = useState(null)
     const [step, setStep] = useState('')
 
+
+    useEffect(() => {
+        onAuthStateChanged(auth, (user) => {
+            setUser(user)
+        });
+    }, [])
+
     const [states, setStates] = useState({
         variant: '',
         message: '',
@@ -63,8 +72,6 @@ export default function NewIncome() {
         const index = articles.findIndex(
             (item) => item.nom === des.nom
         );
-        console.log('des', des);
-        console.log('1st', customerPrice[`price${des.productCode}`] ? customerPrice[`price${des.productCode}`] : pv(indexn).pv);
         if (index >= 0) {
             if ((articles[index].qty + qty) > des.stock) {
                 return handleClickAlert('error', 'Erreur', `Vous n'avez pas assez de produit en stock`)
@@ -148,7 +155,8 @@ export default function NewIncome() {
             customernum: customerInfo?.tel,
             createdAt: serverTimestamp(),
             delivered: false,
-            directProfit: 0
+            directProfit: 0,
+            userId: user.uid
         });
         articles.forEach(async (el) => {
             const docRefProducts = await addDoc(collection(db, "invoicesProduct"), {

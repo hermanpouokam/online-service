@@ -78,7 +78,9 @@ export default function ProductCard({ supplier, setProgress, setOpenBackDrop, se
     };
 
 
+    const addImage = () => { 
 
+    }
 
     const handleAddStock = async () => {
         const checkValue = Object.values(inputsValue).some(value => value > 0)
@@ -222,7 +224,7 @@ export default function ProductCard({ supplier, setProgress, setOpenBackDrop, se
         })
         data = data.filter(el => el.hasParfum !== true)
         if (supplier) {
-            const suppliers = products.filter(el => el.fournisseur == supplier.id.toLowerCase()).map(el => { return el.id })
+            const suppliers = products.filter(el => el.fournisseur.toLowerCase() == supplier.id.toLowerCase()).map(el => { return el.id })
             setStocks([
                 ...data,
                 ...parfumModified

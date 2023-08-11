@@ -36,7 +36,7 @@ export default function NewStock() {
             'def': 'Union Camerounaise des Brasseries'
         },
         {
-            'id': 'CCGBC',
+            'id': 'ccgbc',
             'def': 'Coca Cola Gracedom Bottling Company'
         },
 
