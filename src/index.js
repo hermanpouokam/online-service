@@ -24,251 +24,248 @@ import NewProduct from "./pages/stock/newProduct";
 import NewUser from "./pages/users/newUser";
 import NewCustomer from "./pages/customer/newCustomer";
 import ErrorPage from "./errors/errorpage";
-import { PDFViewer } from "@react-pdf/renderer";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <StateProvider initialState={initialState} reducer={reducer}>
-      <PDFViewer>
-        <BrowserRouter basename={'/'}>
-          <Routes>
-            <Route path='auth/login' element={<Login />} />
-            <Route path="/" element={<App />}>
-              <Route path=''
-                element={
-                  <ProtectedRoute>
-                    <Home />
-                  </ProtectedRoute>
-                }
-                errorElement={<Error />}
-              />
-            </Route>
-            <Route path="*" element={<App />} errorElement={<ErrorPage />}>
+      <BrowserRouter basename={'/'}>
+        <Routes>
+          <Route path='auth/login' element={<Login />} />
+          <Route path="/" element={<App />}>
+            <Route path=''
+              element={
+                <ProtectedRoute>
+                  <Home />
+                </ProtectedRoute>
+              }
+              errorElement={<Error />}
+            />
+          </Route>
+          <Route path="*" element={<App />} errorElement={<ErrorPage />}>
 
-            </Route>
-            <Route path="/finances" element={<App />}>
-              <Route path=''
-                element={
-                  <ProtectedRoute>
-                    <Finances />
-                  </ProtectedRoute>
-                }
-                errorElement={<Error />}
-              />
-            </Route>
-            <Route path="/history" element={<App />}>
-              <Route path=''
-                element={
-                  <ProtectedRoute>
-                    <History />
-                  </ProtectedRoute>
-                }
-                errorElement={<Error />}
-              />
-            </Route>
-            <Route path="/history/page/:page" element={<App />}>
-              <Route path=''
-                element={
-                  <ProtectedRoute>
-                    <History />
-                  </ProtectedRoute>
-                }
-                errorElement={<Error />}
-              />
-            </Route>
-            <Route path="/customer" element={<App />}>
-              <Route path=''
-                element={
-                  <ProtectedRoute>
-                    <Customer />
-                  </ProtectedRoute>
-                }
-                errorElement={<Error />}
-              />
-            </Route>
-            <Route path="/customer/addCustomer" element={<App />}>
-              <Route path=''
-                element={
-                  <ProtectedRoute>
-                    <NewCustomer />
-                  </ProtectedRoute>
-                }
-                errorElement={<Error />}
-              />
-            </Route>
-            <Route path="/dailyclosure" element={<App />}>
-              <Route path=''
-                element={
-                  <ProtectedRoute>
-                    <Daily />
-                  </ProtectedRoute>
-                }
-                errorElement={<Error />}
-              />
-            </Route>
-            <Route path="/customer/:id/details" element={<App />}>
-              <Route path=''
-                element={
-                  <ProtectedRoute>
-                    <Customer />
-                  </ProtectedRoute>
-                }
-                errorElement={<Error />}
-              />
-            </Route>
-            <Route path="/customer/:id/edit" element={<App />}>
-              <Route path=''
-                element={
-                  <ProtectedRoute>
-                    <Customer />
-                  </ProtectedRoute>
-                }
-                errorElement={<Error />}
-              />
-            </Route>
-            <Route path="/orders" element={<App />}>
-              <Route path=''
-                element={
-                  <ProtectedRoute>
-                    <Orders />
-                  </ProtectedRoute>
-                }
-                errorElement={<Error />}
-              />
-            </Route>
-            <Route path="/orders/page/:id" element={<App />}>
-              <Route path=''
-                element={
-                  <ProtectedRoute>
-                    <Orders />
-                  </ProtectedRoute>
-                }
-                errorElement={<Error />}
-              />
-            </Route>
-            <Route path="/stock" element={<App />}>
-              <Route path=''
-                element={
-                  <ProtectedRoute>
-                    <Stock />
-                  </ProtectedRoute>
-                }
-                errorElement={<Error />}
-              />
-            </Route>
-            <Route path="/stock/category/:category" element={<App />}>
-              <Route path=''
-                element={
-                  <ProtectedRoute>
-                    <Stock />
-                  </ProtectedRoute>
-                }
-                errorElement={<Error />}
-              />
-            </Route>
-            <Route path="/params" element={<App />}>
-              <Route path=''
-                element={
-                  <ProtectedRoute>
-                    <Update />
-                  </ProtectedRoute>
-                }
-                errorElement={<Error />}
-              />
-            </Route>
-            <Route path="/orders/orderdetails/:id" element={<App />}>
-              <Route path=''
-                element={
-                  <ProtectedRoute>
-                    <Invoice />
-                  </ProtectedRoute>
-                }
-                errorElement={<Error />}
-              />
-            </Route>
-            <Route path="/orders/neworder/:client" element={<App />}>
-              <Route path=''
-                element={
-                  <ProtectedRoute>
-                    <NewIncome />
-                  </ProtectedRoute>
-                }
-                errorElement={<Error />}
-              />
-            </Route>
-            <Route path="/orders/neworder" element={<App />}>
-              <Route path=''
-                element={
-                  <ProtectedRoute>
-                    <NewIncome />
-                  </ProtectedRoute>
-                }
-                errorElement={<Error />}
-              />
-            </Route>
-            <Route path="/stock/supply/new" element={<App />}>
-              <Route path=''
-                element={
-                  <ProtectedRoute>
-                    <NewStock />
-                  </ProtectedRoute>
-                }
-                errorElement={<Error />}
-              />
-            </Route>
-            <Route path="/stock/supply/history" element={<App />}>
-              <Route path=''
-                element={
-                  <ProtectedRoute>
-                    <SupplyHistory />
-                  </ProtectedRoute>
-                }
-                errorElement={<Error />}
-              />
-            </Route>
-            <Route path="/stock/newproduct" element={<App />}>
-              <Route path=''
-                element={
-                  <ProtectedRoute>
-                    <NewProduct />
-                  </ProtectedRoute>
-                }
-                errorElement={<Error />}
-              />
-            </Route>
-            <Route path="/dailyclosure/search/:date" element={<App />}>
-              <Route path=''
-                element={
-                  <ProtectedRoute>
-                    <Daily />
-                  </ProtectedRoute>
-                }
-                errorElement={<Error />}
-              />
-            </Route>
-            <Route path="/users" element={<App />}>
-              <Route path=''
-                element={
-                  <ProtectedRoute>
-                    <Update />
-                  </ProtectedRoute>
-                }
-                errorElement={<Error />}
-              />
-            </Route>
-            <Route path="/users/newUser" element={<App />}>
-              <Route path=''
-                element={
-                  <ProtectedRoute>
-                    <NewUser />
-                  </ProtectedRoute>
-                }
-                errorElement={<Error />}
-              />
-            </Route>
-          </Routes>
-        </BrowserRouter>
-      </PDFViewer>
+          </Route>
+          <Route path="/finances" element={<App />}>
+            <Route path=''
+              element={
+                <ProtectedRoute>
+                  <Finances />
+                </ProtectedRoute>
+              }
+              errorElement={<Error />}
+            />
+          </Route>
+          <Route path="/history" element={<App />}>
+            <Route path=''
+              element={
+                <ProtectedRoute>
+                  <History />
+                </ProtectedRoute>
+              }
+              errorElement={<Error />}
+            />
+          </Route>
+          <Route path="/history/page/:page" element={<App />}>
+            <Route path=''
+              element={
+                <ProtectedRoute>
+                  <History />
+                </ProtectedRoute>
+              }
+              errorElement={<Error />}
+            />
+          </Route>
+          <Route path="/customer" element={<App />}>
+            <Route path=''
+              element={
+                <ProtectedRoute>
+                  <Customer />
+                </ProtectedRoute>
+              }
+              errorElement={<Error />}
+            />
+          </Route>
+          <Route path="/customer/addCustomer" element={<App />}>
+            <Route path=''
+              element={
+                <ProtectedRoute>
+                  <NewCustomer />
+                </ProtectedRoute>
+              }
+              errorElement={<Error />}
+            />
+          </Route>
+          <Route path="/dailyclosure" element={<App />}>
+            <Route path=''
+              element={
+                <ProtectedRoute>
+                  <Daily />
+                </ProtectedRoute>
+              }
+              errorElement={<Error />}
+            />
+          </Route>
+          <Route path="/customer/:id/details" element={<App />}>
+            <Route path=''
+              element={
+                <ProtectedRoute>
+                  <Customer />
+                </ProtectedRoute>
+              }
+              errorElement={<Error />}
+            />
+          </Route>
+          <Route path="/customer/:id/edit" element={<App />}>
+            <Route path=''
+              element={
+                <ProtectedRoute>
+                  <Customer />
+                </ProtectedRoute>
+              }
+              errorElement={<Error />}
+            />
+          </Route>
+          <Route path="/orders" element={<App />}>
+            <Route path=''
+              element={
+                <ProtectedRoute>
+                  <Orders />
+                </ProtectedRoute>
+              }
+              errorElement={<Error />}
+            />
+          </Route>
+          <Route path="/orders/page/:id" element={<App />}>
+            <Route path=''
+              element={
+                <ProtectedRoute>
+                  <Orders />
+                </ProtectedRoute>
+              }
+              errorElement={<Error />}
+            />
+          </Route>
+          <Route path="/stock" element={<App />}>
+            <Route path=''
+              element={
+                <ProtectedRoute>
+                  <Stock />
+                </ProtectedRoute>
+              }
+              errorElement={<Error />}
+            />
+          </Route>
+          <Route path="/stock/category/:category" element={<App />}>
+            <Route path=''
+              element={
+                <ProtectedRoute>
+                  <Stock />
+                </ProtectedRoute>
+              }
+              errorElement={<Error />}
+            />
+          </Route>
+          <Route path="/params" element={<App />}>
+            <Route path=''
+              element={
+                <ProtectedRoute>
+                  <Update />
+                </ProtectedRoute>
+              }
+              errorElement={<Error />}
+            />
+          </Route>
+          <Route path="/orders/orderdetails/:id" element={<App />}>
+            <Route path=''
+              element={
+                <ProtectedRoute>
+                  <Invoice />
+                </ProtectedRoute>
+              }
+              errorElement={<Error />}
+            />
+          </Route>
+          <Route path="/orders/neworder/:client" element={<App />}>
+            <Route path=''
+              element={
+                <ProtectedRoute>
+                  <NewIncome />
+                </ProtectedRoute>
+              }
+              errorElement={<Error />}
+            />
+          </Route>
+          <Route path="/orders/neworder" element={<App />}>
+            <Route path=''
+              element={
+                <ProtectedRoute>
+                  <NewIncome />
+                </ProtectedRoute>
+              }
+              errorElement={<Error />}
+            />
+          </Route>
+          <Route path="/stock/supply/new" element={<App />}>
+            <Route path=''
+              element={
+                <ProtectedRoute>
+                  <NewStock />
+                </ProtectedRoute>
+              }
+              errorElement={<Error />}
+            />
+          </Route>
+          <Route path="/stock/supply/history" element={<App />}>
+            <Route path=''
+              element={
+                <ProtectedRoute>
+                  <SupplyHistory />
+                </ProtectedRoute>
+              }
+              errorElement={<Error />}
+            />
+          </Route>
+          <Route path="/stock/newproduct" element={<App />}>
+            <Route path=''
+              element={
+                <ProtectedRoute>
+                  <NewProduct />
+                </ProtectedRoute>
+              }
+              errorElement={<Error />}
+            />
+          </Route>
+          <Route path="/dailyclosure/search/:date" element={<App />}>
+            <Route path=''
+              element={
+                <ProtectedRoute>
+                  <Daily />
+                </ProtectedRoute>
+              }
+              errorElement={<Error />}
+            />
+          </Route>
+          <Route path="/users" element={<App />}>
+            <Route path=''
+              element={
+                <ProtectedRoute>
+                  <Update />
+                </ProtectedRoute>
+              }
+              errorElement={<Error />}
+            />
+          </Route>
+          <Route path="/users/newUser" element={<App />}>
+            <Route path=''
+              element={
+                <ProtectedRoute>
+                  <NewUser />
+                </ProtectedRoute>
+              }
+              errorElement={<Error />}
+            />
+          </Route>
+        </Routes>
+      </BrowserRouter>
     </StateProvider>
   </React.StrictMode>
 );
