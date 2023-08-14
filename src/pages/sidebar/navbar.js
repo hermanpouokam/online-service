@@ -97,7 +97,7 @@ export default function Navbar() {
                     class="nav-link dropdown-toggle nav-link-lg nav-link-user"> <img alt="image" src="assets/img/user.png"
                         class="user-img-radious-style" /> <span class="d-sm-none d-lg-inline-block"></span></a>
                     <div class="dropdown-menu dropdown-menu-right pullDown">
-                        <div class="dropdown-title">Hello {users.find(element => element.id === user.uid)?.name} {users.find(element => element.id === user.uid)?.surname}</div>
+                        <div class="dropdown-title">Hello {user?.name} {user.surname}</div>
                         <a href="profile.html" class="dropdown-item has-icon"> <i class="far
 										fa-user"></i> Profil
                         </a>

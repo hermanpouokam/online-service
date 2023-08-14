@@ -162,7 +162,7 @@ export default function Home() {
                           </div>
                         </div>
                         :
-                        item.id != '2' && item.id != '4' && item.id != '9' && item.id != '6' && item.id != '3' &&
+                        item.id != '2' && item.id != '4' && item.id != '9' && item.id != '6' &&
                         <div div class="col-xl-3 col-lg-6" key={index} >
                           <div class="card">
                             <div class="card-body card-type-3">

@@ -90,13 +90,21 @@ export default function Sidebar() {
                     <ul class="sidebar-menu">
                         {
                             links.map((item, i) => (
-                                user.accountType !== 'admin' && i !== 5 && i !== 4 && i !== 7 &&
-                                <li key={i} class={` ${location == item.link ? 'active' : null}`}>
-                                    <a href={item.link} class={`nav-link `}>
-                                        <i class={`material-icons`}>{item.icon}</i>
-                                        <span>{item.text}</span>
-                                    </a>
-                                </li>
+                                user.accountType == 'admin' ?
+                                    <li key={i} class={` ${location == item.link ? 'active' : null}`}>
+                                        <a href={item.link} class={`nav-link `}>
+                                            <i class={`material-icons`}>{item.icon}</i>
+                                            <span>{item.text}</span>
+                                        </a>
+                                    </li>
+                                    :
+                                    user.accountType !== 'admin' && i !== 5 && i !== 4 && i !== 7 &&
+                                    <li key={i} class={` ${location == item.link ? 'active' : null}`}>
+                                        <a href={item.link} class={`nav-link `}>
+                                            <i class={`material-icons`}>{item.icon}</i>
+                                            <span>{item.text}</span>
+                                        </a>
+                                    </li>
                             ))
                         }
                     </ul>
