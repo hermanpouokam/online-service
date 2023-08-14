@@ -33,13 +33,12 @@ export default function NewIncome() {
     const theme = useTheme();
     const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
-    const [{ customerInfo, stock, products, parfum, refresh }, dispatch] = useStateValue()
+    const [{ customerInfo, stock, products, parfum, refresh, user }, dispatch] = useStateValue()
 
     const [articles, setArticles] = useState([])
     const [des, setDes] = useState(null)
     const [qty, setQty] = useState(0)
     const [open, setOpen] = useState(false);
-    const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(false)
     const [loading1, setLoading1] = useState(true)
     const [active, setActive] = useState(false)
@@ -55,11 +54,6 @@ export default function NewIncome() {
     const [step, setStep] = useState('')
 
 
-    useEffect(() => {
-        onAuthStateChanged(auth, (user) => {
-            setUser(user)
-        });
-    }, [])
 
     const [states, setStates] = useState({
         variant: '',
@@ -103,7 +97,6 @@ export default function NewIncome() {
                 qty: qty,
                 pu: customerPrice[`price${des.productCode}`] ? customerPrice[`price${des.productCode}`] : pv(indexn).pv
             }])
-            console.log('2nd', customerPrice[`price${des.productCode}`] ? customerPrice[`price${des.productCode}`] : pv(indexn).pv);
         }
         setDes(null)
         setQty('')
@@ -156,7 +149,8 @@ export default function NewIncome() {
             createdAt: serverTimestamp(),
             delivered: false,
             directProfit: 0,
-            userId: user.uid
+            userId: user.userId,
+            enterprise: user.enterprise
         });
         articles.forEach(async (el) => {
             const docRefProducts = await addDoc(collection(db, "invoicesProduct"), {
@@ -232,12 +226,12 @@ export default function NewIncome() {
 
     useEffect(() => {
         const getdata = async () => {
-            if (customerInfo.type) {
+            if (customerInfo?.type) {
                 setCustomerPrice([])
                 setLoading1(false)
                 return
             }
-            const docRef = doc(db, "customerPrice", customerInfo.id);
+            const docRef = doc(db, "customerPrice", customerInfo?.id);
             const docSnap = await getDoc(docRef);
             if (docSnap.exists()) {
                 setCustomerPrice(docSnap.data())
@@ -247,7 +241,11 @@ export default function NewIncome() {
                 setLoading1(false)
             }
         }
-        getdata()
+        if (customerInfo?.id) {
+            getdata()
+        } else {
+            setLoading1(false)
+        }
     }, [refresh])
 
     function bodyClicked() {
@@ -374,7 +372,7 @@ export default function NewIncome() {
                                     <div class="card-header ">
                                         <div class='col-12 d-flex' style={{ justifyContent: 'space-between' }}>
                                             <h5 class='text-left'>
-                                                Nouvelle Facture <span class='h6'>• </span> {customerInfo.nom}
+                                                Nouvelle Facture <span class='h6'>• </span> {customerInfo.nom ? customerInfo?.nom : 'Client divers'}
                                             </h5>
                                             {
                                                 articles.length > 0 ?
@@ -401,20 +399,22 @@ export default function NewIncome() {
                                                     <tbody ref={containerRef}>
                                                         {
                                                             articles.map((item, i) => (
-                                                                <Slide direction="up" in={item.nom} timeout={200} container={containerRef.current} mountOnEnter unmountOnExit>
-                                                                    <tr>
-                                                                        <th scope="row">{i + 1}</th>
-                                                                        <td>{item.nom}</td>
-                                                                        <td>{item.pu}</td>
-                                                                        <td class='text-right'>{item.qty}</td>
-                                                                        <td class='text-right'>{item.qty * item.pu}</td>
-                                                                        <td class='text-center'>
-                                                                            <a style={{ cursor: 'pointer' }} onClick={() => handleModify(item)} class="mr-2 text-success"><i class="far fa-edit"></i></a>
-                                                                            <a style={{ cursor: 'pointer' }} data-toggle="modal"
-                                                                                data-target={`#exampleModalCenter${item.id}`} class=" text-danger"><i class="fas fa-trash"></i></a>
-                                                                        </td>
-                                                                    </tr>
-                                                                </Slide>
+                                                                <React.Fragment key={i}>
+                                                                    <Slide direction="up" in={item.nom} timeout={200} container={containerRef.current} mountOnEnter unmountOnExit>
+                                                                        <tr>
+                                                                            <th scope="row">{i + 1}</th>
+                                                                            <td>{item.nom}</td>
+                                                                            <td>{item.pu}</td>
+                                                                            <td class='text-right'>{item.qty}</td>
+                                                                            <td class='text-right'>{item.qty * item.pu}</td>
+                                                                            <td class='text-center'>
+                                                                                <a style={{ cursor: 'pointer' }} onClick={() => handleModify(item)} class="mr-2 text-success"><i class="far fa-edit"></i></a>
+                                                                                <a style={{ cursor: 'pointer' }} data-toggle="modal"
+                                                                                    data-target={`#exampleModalCenter${item.id}`} class=" text-danger"><i class="fas fa-trash"></i></a>
+                                                                            </td>
+                                                                        </tr>
+                                                                    </Slide>
+                                                                </React.Fragment>
                                                             ))
                                                         }
                                                         <tr >

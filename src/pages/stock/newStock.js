@@ -7,6 +7,7 @@ import { Backdrop, Box, CircularProgress, Grid, List, ListItem, ListItemButton, 
 import RadioButtonCheckedIcon from '@mui/icons-material/RadioButtonChecked';
 import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked';
 import { useStateValue } from '../../components/stateProvider'
+import { useNavigate } from 'react-router-dom';
 
 export default function NewStock() {
 
@@ -20,7 +21,9 @@ export default function NewStock() {
         color: theme.palette.text.primary,
     }));
 
-    const [{ stock, products }, dispatch] = useStateValue()
+    const [{ stock, products, user }, dispatch] = useStateValue()
+
+    const navigate = useNavigate()
 
     const suppliers = [
         {
@@ -77,7 +80,9 @@ export default function NewStock() {
         setSupplier(element)
     }
 
-
+    if (user.accountType !== 'admin') {
+        navigate('/')
+    }
 
     const SuppliersCard = () => {
 

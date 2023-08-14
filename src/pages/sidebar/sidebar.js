@@ -10,7 +10,7 @@ export default function Sidebar() {
     let getLocation = useLocation()
     let res = getLocation.pathname.split('/')
     let location = `/${res[1]}`
-    const [{ }, dispatch] = useStateValue()
+    const [{ user }, dispatch] = useStateValue()
 
     useEffect(() => {
         dispatch({
@@ -54,7 +54,7 @@ export default function Sidebar() {
             'name': 'Finances',
             'icon': 'account_balance_wallet',
             'link': '/finances',
-            'text': 'Finances',
+            'text': 'Comptabilité',
         },
         {
             'name': 'history',
@@ -90,6 +90,7 @@ export default function Sidebar() {
                     <ul class="sidebar-menu">
                         {
                             links.map((item, i) => (
+                                user.accountType !== 'admin' && i !== 5 && i !== 4 && i !== 7 &&
                                 <li key={i} class={` ${location == item.link ? 'active' : null}`}>
                                     <a href={item.link} class={`nav-link `}>
                                         <i class={`material-icons`}>{item.icon}</i>
@@ -101,6 +102,6 @@ export default function Sidebar() {
                     </ul>
                 </aside>
             </div>
-        </div>
+        </div >
     )
 }

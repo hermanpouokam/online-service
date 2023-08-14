@@ -574,14 +574,16 @@ export default function Orders() {
                 <th class='text-capitalize'>{item.customerId == 'client divers' ? item.customerName ? item.customerName : 'Client divers' : customer.find(el => el.id == item.customerId).nom}</th>
                 <td>{productOfArray(arrayProduct)}</td>
                 <td>{moment(item.createdAt).format("DD-MM-YYYY • HH:mm")}</td>
-                <td>
-                    {
-                        arrayProduct.reduce((acc, val) => {
-                            const product = products.find(el => el.id === val.productId);
-                            return acc + ((val.price - product.pu) * val.qty)
-                        }, 0)
-                    }
-                </td>
+                {user.accountType === 'admin' && (
+                    <td>
+                        {
+                            arrayProduct.reduce((acc, val) => {
+                                const product = products.find(el => el.id === val.productId);
+                                return acc + ((val.price - product.pu) * val.qty)
+                            }, 0)
+                        }
+                    </td>)
+                }
                 <td scope="col" >
                     {
                         item.delivered ?
@@ -919,7 +921,9 @@ export default function Orders() {
                                                             <th scope="col">Client</th>
                                                             <th scope="col"> Montant(FCFA)</th>
                                                             <th scope="col">Date</th>
-                                                            <th scope="col">Marge directe</th>
+                                                            {user.accountType === 'admin' &&
+                                                                <th scope="col">Marge directe</th>
+                                                            }
                                                             <th scope="col">Statut</th>
                                                             <th scope="col" class='text-center'>Actions</th>
                                                         </tr>

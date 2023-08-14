@@ -23,7 +23,8 @@ export default function Daily() {
 
     const params = useParams()
 
-    const [{ employee, products, stock }, dispatch] = useStateValue()
+    const [{ employee, products, stock, user }, dispatch] = useStateValue()
+
     const [date, setDate] = useState(params.date ? moment(params.date).format('YYYY-MM-DD') : moment().format('YYYY-MM-DD'))
     const [dailyDoc, setDailyDoc] = useState(null)
     const [prevDay, setPrevDay] = useState()
@@ -516,10 +517,12 @@ export default function Daily() {
 
                                                 <div class="card-header-action row">
                                                     {
-                                                        dailyDoc.closed == false ?
-                                                            <button onClick={handleClickOpenDatePicker} data-toggle="tooltip" data-placement="top" title='cloturer la journée' class="btn btn-icon btn-success mr-sm-2"><i class="fas fa-check"></i></button>
-                                                            :
-                                                            <button disabled data-toggle="tooltip" data-placement="top" title='Journée cloturée' class="btn btn-icon btn-secondary mr-sm-2 pe-none"><i class="fas fa-check"></i></button>
+                                                        user.accountType == 'admin' && (
+                                                            dailyDoc.closed == false ?
+                                                                <button onClick={handleClickOpenDatePicker} data-toggle="tooltip" data-placement="top" title='cloturer la journée' class="btn btn-icon btn-success mr-sm-2"><i class="fas fa-check"></i></button>
+                                                                :
+                                                                <button disabled data-toggle="tooltip" data-placement="top" title='Journée cloturée' class="btn btn-icon btn-secondary mr-sm-2 pe-none"><i class="fas fa-check"></i></button>
+                                                        )
                                                     }
                                                     <form class="card-header-form">
                                                         <div class="input-group">
@@ -545,7 +548,8 @@ export default function Daily() {
                                 <div class="row">
                                     {
                                         dash.map((item, index) => (
-                                            <div class="col-xl-3 col-lg-6" key={index}>
+                                            user.accountType != 'admin' && index == 0 &&
+                                            <div class="col-xl-3 col-lg-6" key={index} >
                                                 <div class="card">
                                                     <div class="card-body card-type-3">
                                                         <div class="row">
@@ -573,6 +577,7 @@ export default function Daily() {
                                                     </div>
                                                 </div>
                                             </div>
+
                                         ))
                                     }
 
@@ -690,7 +695,7 @@ export default function Daily() {
                                                                 <th >N° de facture</th>
                                                                 <th class=''>Client</th>
                                                                 <th >Montant</th>
-                                                                <th>Marge directe</th>
+                                                                {user.accountType === 'admin' && <th>Marge directe</th>}
                                                                 <th>Date</th>
                                                                 <th>Livreur</th>
                                                                 <th class='text-center'>Statut</th>
@@ -711,9 +716,12 @@ export default function Daily() {
                                                                                 <td >
                                                                                     <strong>{_.amountToPaid}</strong>
                                                                                 </td>
-                                                                                <td >
-                                                                                    <strong>{_.directProfit}</strong>
-                                                                                </td>
+                                                                                {
+                                                                                    user.accountType === 'admin' &&
+                                                                                    <td >
+                                                                                        <strong>{_.directProfit}</strong>
+                                                                                    </td>
+                                                                                }
                                                                                 <td>
                                                                                     {moment(_.createdAt).format("DD-MM-YYYY • HH:mm")}
                                                                                 </td>

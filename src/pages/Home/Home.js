@@ -18,7 +18,7 @@ export default function Home() {
 
   const theme = useTheme()
 
-  const [{ enterprise, stock, customer, products }, dispatch] = useStateValue()
+  const [{ enterprise, stock, customer, products, user }, dispatch] = useStateValue()
 
   const [orders, setOrders] = React.useState([])
   const [spends, setSpends] = React.useState([])
@@ -139,27 +139,51 @@ export default function Home() {
                 <div class="row">
                   {
                     dash.map((item, index) => (
-                      <div class="col-xl-3 col-lg-6" key={index}>
-                        <div class="card">
-                          <div class="card-body card-type-3">
-                            <div class="row">
-                              <div class="col">
-                                <h6 class="text-muted mb-0">{item.text}</h6>
-                                <span class="font-weight-bold mb-0">{item.number}</span>
-                              </div>
-                              <div class="col-auto">
-                                <div class={`card-circle ${item.bgColor} text-white`}>
-                                  <i class={item.icon}></i>
+                      user.accountType === 'admin' ?
+                        <div div class="col-xl-3 col-lg-6" key={index} >
+                          <div class="card">
+                            <div class="card-body card-type-3">
+                              <div class="row">
+                                <div class="col">
+                                  <h6 class="text-muted mb-0">{item.text}</h6>
+                                  <span class="font-weight-bold mb-0">{item.number}</span>
+                                </div>
+                                <div class="col-auto">
+                                  <div class={`card-circle ${item.bgColor} text-white`}>
+                                    <i class={item.icon}></i>
+                                  </div>
                                 </div>
                               </div>
+                              <p class="mt-3 mb-0 text-muted text-sm">
+                                <span class="text-success mr-2"><i class={`fa fa-arrow-${'up'}`}></i>{item.increase}</span>
+                                <span class="text-nowrap">Depuis {item.lastUpdated}</span>
+                              </p>
                             </div>
-                            <p class="mt-3 mb-0 text-muted text-sm">
-                              <span class="text-success mr-2"><i class={`fa fa-arrow-${'up'}`}></i>{item.increase}</span>
-                              <span class="text-nowrap">Depuis {item.lastUpdated}</span>
-                            </p>
                           </div>
                         </div>
-                      </div>
+                        :
+                        item.id != '2' && item.id != '4' && item.id != '9' && item.id != '6' && item.id != '3' &&
+                        <div div class="col-xl-3 col-lg-6" key={index} >
+                          <div class="card">
+                            <div class="card-body card-type-3">
+                              <div class="row">
+                                <div class="col">
+                                  <h6 class="text-muted mb-0">{item.text}</h6>
+                                  <span class="font-weight-bold mb-0">{item.number}</span>
+                                </div>
+                                <div class="col-auto">
+                                  <div class={`card-circle ${item.bgColor} text-white`}>
+                                    <i class={item.icon}></i>
+                                  </div>
+                                </div>
+                              </div>
+                              <p class="mt-3 mb-0 text-muted text-sm">
+                                <span class="text-success mr-2"><i class={`fa fa-arrow-${'up'}`}></i>{item.increase}</span>
+                                <span class="text-nowrap">Depuis {item.lastUpdated}</span>
+                              </p>
+                            </div>
+                          </div>
+                        </div>
                     ))
                   }
                 </div>
@@ -169,6 +193,7 @@ export default function Home() {
                   <ChartWiget orders={orders} />
                 </div>
                 <div class='col-12 col-sm-12 col-lg-4'>
+
                   {/* <div class=''>
                     <div class="card">
                       <div class="card-header">
@@ -261,7 +286,7 @@ export default function Home() {
             <Settings />
           </div>
         </div>
-      </div>
-    </div>
+      </div >
+    </div >
   )
 }

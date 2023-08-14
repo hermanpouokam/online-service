@@ -12,14 +12,14 @@ const firebaseConfig = {
   appId: "1:545833235181:web:d8cddcea5fe47e385352e4"
 };
 
-// const firebaseConfig = {
-//   apiKey: "AIzaSyB0Tbh3NQjFPBMNSnd1YVLUKaU80rUPBik",
-//   authDomain: "kilombo-test.firebaseapp.com",
-//   projectId: "kilombo-test",
-//   storageBucket: "kilombo-test.appspot.com",
-//   messagingSenderId: "131984964014",
+// test const firebaseConfig = {
+//    apiKey: "AIzaSyB0Tbh3NQjFPBMNSnd1YVLUKaU80rUPBik",
+//    authDomain: "kilombo-test.firebaseapp.com",
+//    projectId: "kilombo-test",
+//    storageBucket: "kilombo-test.appspot.com",
+//    messagingSenderId: "131984964014",
 //   appId: "1:131984964014:web:aaa216a27c4477408d703f"
-// };
+//  };
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);

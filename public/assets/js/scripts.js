@@ -152,10 +152,9 @@ $(function () {
     $activeAnchors.next().show();
   });
 
-  $("[data-toggle='sidebar']").click(function () {
+  $(document).on('click', "#sidebar", function () {
     var body = $("body"),
       w = $(window);
-
     if (w.outerWidth() <= 1024) {
       body.removeClass("search-show search-gone");
       if (body.hasClass("sidebar-gone")) {

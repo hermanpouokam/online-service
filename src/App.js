@@ -1,170 +1,218 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
-  createBrowserRouter,
-  RouterProvider,
+  Outlet,
 } from "react-router-dom";
-import Customer from "./pages/customer/customer";
-import Finances from "./pages/finances/Finances";
-import History from "./pages/history/history";
-import Home from "./pages/Home/Home";
-import Orders from "./pages/orders/orders";
-import Params from "./pages/params/params";
-import Stock from "./pages/stock/stock";
-import NewIncome from "./pages/orders/newIncome";
-import Invoice from "./pages/orders/invoice";
-import NewStock from "./pages/stock/newStock";
-import Daily from "./pages/dialy/daily";
-import Login from "./pages/auth/login";
-import Users from "./pages/users/users";
-import NewUser from "./pages/users/newUser";
-import Error from "./errors/404";
-import FinancesHistory from "./pages/finances/spendHistory";
-import NewProduct from "./pages/stock/newProduct";
-import NewCustomer from "./pages/customer/newCustomer";
-import SupplyHistory from "./pages/stock/history";
-import Update from "./pages/update/update";
-import DetailsPage from "./pages/customer/detailsPages";
-import ErrorPage from "./errors/errorpage";
-
-const router = createBrowserRouter([
-  {
-    path: "/auth/login",
-    element: <Login />,
-  },
-  {
-    path: "/",
-    element: <Home />,
-    errorElement: <ErrorPage />
-  },
-  {
-    path: '/finances',
-    element: <Finances />
-  },
-  {
-    path: '/history',
-    element: <History />,
-    errorElement: <ErrorPage />
-  },
-  {
-    path: '/history/page/:page',
-    element: <History />,
-    errorElement: <ErrorPage />
-  },
-  {
-    path: '/customer',
-    element: <Customer />,
-    errorElement: <ErrorPage />
-  },
-  {
-    path: '/customer/:id/edit',
-    element: <Update />,
-    errorElement: <ErrorPage />
-  },
-  {
-    path: '/customer/:id/details',
-    element: <Update />,
-    errorElement: <ErrorPage />
-  },
-  {
-    path: '/customer/addCustomer',
-    element: <NewCustomer />,
-    errorElement: <ErrorPage />
-  },
-  {
-    path: '/orders',
-    element: <Orders />,
-    errorElement: <ErrorPage />
-  },
-  {
-    path: '/orders/page/:id',
-    element: <Orders />,
-    errorElement: <ErrorPage />
-  },
-  {
-    path: '/stock',
-    element: <Stock />,
-    errorElement: <ErrorPage />
-  },
-  {
-    path: '/stock/category/:category',
-    element: <Stock />,
-    errorElement: <ErrorPage />
-  },
-  {
-    path: '/params',
-    element: <Update />,
-    errorElement: <ErrorPage />
-  },
-  {
-    path: '/orders/neworder',
-    element: <NewIncome />,
-    // errorElement: <ErrorPage />
-  },
-  {
-    path: '/orders/orderdetails/:id',
-    element: <Invoice />,
-    errorElement: <ErrorPage />
-  },
-  {
-    path: '/orders/neworder/:client',
-    element: <NewIncome />,
-    errorElement: <ErrorPage />
-  },
-  {
-    path: '/stock/supply/new',
-    element: <NewStock />,
-    errorElement: <ErrorPage />
-  },
-  {
-    path: '/stock/supply/history',
-    element: <SupplyHistory />,
-    errorElement: <ErrorPage />
-  },
-  {
-    path: '/stock/supply/history/page/:page',
-    element: <SupplyHistory />,
-    errorElement: <ErrorPage />
-  },
-  {
-    path: '/stock/newproduct',
-    element: <NewProduct />,
-    errorElement: <ErrorPage />
-  },
-  {
-    path: '/dailyclosure',
-    element: <Daily />,
-    errorElement: <ErrorPage />
-  },
-  {
-    path: '/dailyclosure/search/:date',
-    element: <Daily />,
-    errorElement: <ErrorPage />
-  },
-  {
-    path: '/users',
-    element: <Update />,
-    errorElement: <ErrorPage />
-  },
-  {
-    path: '/users/newUser',
-    element: <NewUser />,
-    errorElement: <ErrorPage />
-  },
-  {
-    path: '/finances/spend/history',
-    element: <FinancesHistory />,
-    errorElement: <ErrorPage />
-  },
-  {
-    path: '*',
-    element: <Error />
-  }
-]);
+import IdleTimeOutHandler from "./utils/IdleTimeOutHandler";
+import { collection, doc, getDoc, getDocs, onSnapshot, query, serverTimestamp, setDoc, where } from 'firebase/firestore'
+import { onAuthStateChanged } from "firebase/auth";
+import { useStateValue } from "./components/stateProvider";
+import { auth, db } from "./firebase";
+import moment from 'moment'
 
 export default function App() {
 
+  const [isActive, setIsActive] = useState(true)
+  const [isLogout, setLogout] = useState(false)
+  const [{ user, refresh, enterprise, users }, dispatch] = useStateValue()
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() =>
+    async () => {
+      const q = query(collection(db, "articles"));
+      const querySnapshot = await getDocs(q);
+      let array = []
+      querySnapshot.forEach((doc) => {
+        const data = doc.data()
+        const id = doc.id
+        array.push({ id, ...data })
+      });
+      if (array.length > 0) {
+        sessionStorage.setItem('productsKilombo', JSON.stringify(array))
+        dispatch({
+          type: "SET_PRODUCTS",
+          products: array
+        })
+      }
+      dispatch({
+        type: 'REFRESH',
+        payload: false
+      })
+    }, [refresh])
+
+  useEffect(() =>
+    async () => {
+      const q = query(collection(db, "stock"));
+      const querySnapshot = await getDocs(q);
+      let array = []
+      querySnapshot.forEach((doc) => {
+        const data = doc.data()
+        const id = doc.id
+        array.push({ id, ...data })
+      });
+      if (array.length > 0) {
+        let parfum = []
+        for (let i = 0; i < array.length; i++) {
+          const el = array[i];
+          const q = query(collection(db, "parfum"), where("productCode", "==", el.productCode));
+          const querySnapshot = await getDocs(q);
+          querySnapshot.forEach((doc) => {
+            const data = doc.data()
+            const id = doc.id
+            parfum.push({ id, ...data })
+          });
+
+        }
+        sessionStorage.setItem('parfumKilombo', JSON.stringify(parfum))
+        dispatch({
+          type: "SET_PARFUM",
+          parfum: parfum
+        })
+        sessionStorage.setItem('stockKilombo', JSON.stringify(array))
+        dispatch({
+          type: "SET_STOCK",
+          stock: array
+        })
+      }
+      dispatch({
+        type: 'REFRESH',
+        payload: false
+      })
+    }, [refresh])
+
+  useEffect(() => {
+    const getData = async () => {
+      const q = query(collection(db, "customer"));
+      let customers = [];
+      const unsubscribe = onSnapshot(q, (querySnapshot) => {
+        querySnapshot.forEach((doc) => {
+          const id = doc.id
+          const data = doc.data()
+          customers.push({ id, ...data });
+        });
+        sessionStorage.setItem("customerKilombo", JSON.stringify(customers))
+        dispatch({
+          type: 'ADD_CUSTOMER',
+          customers: customers
+        });
+      })
+
+      const q2 = query(collection(db, "users"));
+      let users = [];
+      const unsubscribe2 = onSnapshot(q2, (querySnapshot) => {
+        querySnapshot.forEach((doc) => {
+          const id = doc.id
+          const data = doc.data()
+          users.push({ id, ...data });
+        });
+        sessionStorage.setItem("usersKilombo", JSON.stringify(users))
+        dispatch({
+          type: 'SET_USERS',
+          users: users
+        });
+      })
+
+      const docRef = doc(db, "entreprise", user.enterprise);
+      const docSnap = await getDoc(docRef);
+      if (docSnap.exists()) {
+        const data = docSnap.data()
+        sessionStorage.setItem("enterprise", JSON.stringify(data))
+        dispatch({
+          type: 'SET_ENTERPRISE',
+          payload: data
+        });
+      }
+
+      const q1 = query(collection(db, "employee"));
+      const unsubscribe1 = onSnapshot(q1, (querySnapshot) => {
+        let employee = []
+        querySnapshot.forEach((doc) => {
+          const id = doc.id
+          const data = doc.data()
+          employee.push({ id, ...data });
+        });
+        sessionStorage.setItem("employeeKilombo", JSON.stringify(employee))
+      })
+
+      dispatch({
+        type: 'REFRESH',
+        payload: false
+      })
+    }
+    getData()
+  }, [refresh])
+
+  useEffect(() => {
+    const startDay = async () => {
+      const docRef = doc(db, "dailyclosure", moment().format('DDMMYYYY'));
+      const docSnap = await getDoc(docRef);
+      if (docSnap.exists()) {
+        const check = async () => {
+          let stock = []
+          const q = query(collection(db, "stock"));
+          const querySnapshot = await getDocs(q);
+          querySnapshot.forEach((doc) => {
+            const data = doc.data()
+            const id = doc.id
+            stock.push({ id, ...data })
+          });
+
+          let dailyStock = []
+          const subColRef = collection(db, "dailyclosure", moment().format('DDMMYYYY'), 'dailyStock');
+          const qSnap = await getDocs(subColRef)
+          dailyStock = qSnap.docs.map(d => ({ id: d.id, ...d.data() }))
+
+          const uniqueResultArrayObjOne = stock.filter(function (objOne) {
+            return !dailyStock.some(function (objTwo) {
+              return objOne.id == objTwo.id;
+            });
+          });
+          uniqueResultArrayObjOne.forEach(async function (docData) {
+            await setDoc(doc(db, `dailyclosure`, `${moment().format('DDMMYYYY')}`, `dailyStock`, `${docData.id}`,), {
+              stock: docData.stock,
+              appro: 0,
+              finalStock: 0
+            });
+          })
+
+        }
+        check()
+        return setLoading(false)
+      }
+      await setDoc(doc(db, "dailyclosure", moment().format('DDMMYYYY')), {
+        createdAt: serverTimestamp(),
+        closed: false,
+        caisse: parseInt(enterprise.caisse),
+        marge: 0,
+        depense: 0
+      });
+      const q = query(collection(db, "stock"));
+      const querySnapshot = await getDocs(q);
+      let array = []
+      querySnapshot.forEach(async function (docData) {
+        const data = docData.data()
+        const id = docData.id
+        await setDoc(doc(db, `dailyclosure`, `${moment().format('DDMMYYYY')}`, `dailyStock`, `${id}`,), {
+          stock: data.stock,
+          appro: 0,
+          finalStock: 0
+        });
+      });
+    }
+    startDay()
+    setLoading(false)
+
+  }, [refresh])
+
+
 
   return (
-    <RouterProvider router={router} />
+    <React.Fragment>
+      <IdleTimeOutHandler
+        onActive={() => { setIsActive(true) }}
+        onIdle={() => { setIsActive(false) }}
+        onLogout={() => { setLogout(true) }}
+      />
+      <Outlet />
+    </React.Fragment>
   );
 }

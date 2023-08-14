@@ -21,7 +21,7 @@ function SlideTransition(props) {
 
 export default function NewProduct() {
 
-    const [{ products }, dispatch] = useStateValue()
+    const [{ products, user }, dispatch] = useStateValue()
 
     const [loading, setLoading] = useState(false)
     const [open, setOpen] = useState(false);
@@ -322,6 +322,11 @@ export default function NewProduct() {
             <div class="loader"></div>
         )
     }
+
+    if (user.accountType !== 'admin') {
+        window.history.back()
+    }
+
 
     return (
         <div>
