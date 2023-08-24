@@ -293,8 +293,8 @@ export default function Login() {
             payload: false
         })
     }
-    async function handleLogin(e) {
 
+    async function handleLogin(e) {
         e.preventDefault()
         setloading(true)
         signInWithEmailAndPassword(auth, user.email, password)
@@ -318,6 +318,7 @@ export default function Login() {
                 await secondFunction()
                 const url = window.location.href.split('?')[1]
                 const urlToSet = url?.split('=')[1]
+                localStorage.setItem('lastInteractionTime', moment())
                 if (url) {
                     window.location.assign(urlToSet)
                 } else {

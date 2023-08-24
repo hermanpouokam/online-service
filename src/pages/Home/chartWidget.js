@@ -29,16 +29,26 @@ export default function ChartWiget({ orders }) {
         }
         const groupedData = getDataWidget()
         let data = []
-        Object.keys(groupedData).forEach((key) => {
-            const day = key
-            const sell = groupedData[key].reduce((acc, curVal) => {
-                return acc + curVal.amountToPaid
-            }, 0);
-            const marge = groupedData[key].reduce((acc, curVal) => {
-                return acc + curVal.directProfit
-            }, 0);
-            data.push({ name: abbDay[moment(day).day()], recette: sell, marge: marge })
-        });
+        for (const day in abbDay) {
+            if (Object.hasOwnProperty.call(abbDay, day)) {
+                const element = abbDay[day];
+                Object.keys(groupedData).forEach((key) => {
+                    const day = key
+                    let sell = 0
+                    let marge = 0
+                    if (abbDay[moment(day).day()] === element) {
+                        sell = groupedData[key].reduce((acc, curVal) => {
+                            return acc + curVal.amountToPaid
+                        }, 0);
+                        marge = groupedData[key].reduce((acc, curVal) => {
+                            return acc + curVal.directProfit
+                        }, 0);
+                    }
+                    data.push({ name: element, recette: sell, marge: marge })
+                });
+            }
+        }
+        console.log(data)
         setWeekDatas(data)
     }, [orders])
 

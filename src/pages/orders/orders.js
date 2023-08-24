@@ -268,7 +268,6 @@ export default function Orders() {
                 window.location.reload()
             } catch (error) {
                 setLoad(false)
-                console.log(error)
             }
         }
 

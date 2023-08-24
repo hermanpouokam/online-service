@@ -24,6 +24,9 @@ import NewProduct from "./pages/stock/newProduct";
 import NewUser from "./pages/users/newUser";
 import NewCustomer from "./pages/customer/newCustomer";
 import ErrorPage from "./errors/errorpage";
+import Inventory from "./pages/inventory/inventory";
+import InventHistory from "./pages/inventory/history";
+import InventDetails from "./pages/inventory/details";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
@@ -149,6 +152,46 @@ ReactDOM.createRoot(document.getElementById("root")).render(
               element={
                 <ProtectedRoute>
                   <Stock />
+                </ProtectedRoute>
+              }
+              errorElement={<Error />}
+            />
+          </Route>
+          <Route path="/stock/inventory" element={<App />}>
+            <Route path=''
+              element={
+                <ProtectedRoute>
+                  <Inventory />
+                </ProtectedRoute>
+              }
+              errorElement={<Error />}
+            />
+          </Route>
+          <Route path="/stock/inventory/history" element={<App />}>
+            <Route path=''
+              element={
+                <ProtectedRoute>
+                  <InventHistory />
+                </ProtectedRoute>
+              }
+              errorElement={<Error />}
+            />
+          </Route>
+          <Route path="/stock/inventory/history/details" element={<App />}>
+            <Route path=''
+              element={
+                <ProtectedRoute>
+                  <InventDetails />
+                </ProtectedRoute>
+              }
+              errorElement={<Error />}
+            />
+          </Route>
+          <Route path="/stock/inventory/history/details/:id" element={<App />}>
+            <Route path=''
+              element={
+                <ProtectedRoute>
+                  <InventDetails />
                 </ProtectedRoute>
               }
               errorElement={<Error />}

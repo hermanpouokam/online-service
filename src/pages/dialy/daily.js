@@ -42,7 +42,6 @@ export default function Daily() {
         message: '',
         title: ''
     })
-    const [lastDay, setLastDay] = useState()
 
     useEffect(() => {
         const getData = async () => {
@@ -59,7 +58,7 @@ export default function Daily() {
             getData()
         }
     }, [params.date])
-
+// Get daily closure data
 
     const [open, setOpen] = React.useState(false);
 
@@ -68,7 +67,6 @@ export default function Daily() {
     };
 
     useEffect(() => {
-
         if (!date) {
             alert('Mauvais format de date')
             return window.location.assign('/dailyclosure')
@@ -548,35 +546,65 @@ export default function Daily() {
                                 <div class="row">
                                     {
                                         dash.map((item, index) => (
-                                            user.accountType != 'admin' && index == 0 &&
-                                            <div class="col-xl-3 col-lg-6" key={index} >
-                                                <div class="card">
-                                                    <div class="card-body card-type-3">
-                                                        <div class="row">
-                                                            <div class="col">
-                                                                <h6 class="text-muted mb-0">{item.text}</h6>
-                                                                <span class="font-weight-bold mb-0">{item.number}</span>
-                                                            </div>
-                                                            <div class="col-auto">
-                                                                <div class={`card-circle ${item.bgColor} text-white`}>
-                                                                    <i class={item.icon}></i>
+                                            user.accountType === 'admin' ?
+                                                <div class="col-xl-3 col-lg-6" key={index} >
+                                                    <div class="card">
+                                                        <div class="card-body card-type-3">
+                                                            <div class="row">
+                                                                <div class="col">
+                                                                    <h6 class="text-muted mb-0">{item.text}</h6>
+                                                                    <span class="font-weight-bold mb-0">{item.number}</span>
+                                                                </div>
+                                                                <div class="col-auto">
+                                                                    <div class={`card-circle ${item.bgColor} text-white`}>
+                                                                        <i class={item.icon}></i>
+                                                                    </div>
                                                                 </div>
                                                             </div>
+                                                            {
+                                                                moment(params.date).format('YYYY-MM-DD') !== moment(allDocs[0]?.createdAt).format('YYYY-MM-DD') &&
+                                                                <p class="mt-3 mb-0 text-muted text-sm">
+                                                                    <span
+                                                                        class={`${item.increase == 0 ? 'text-warning' : item.id == 2 ? item.increase < 0 ? "text-success" : "text-danger" : item.increase > 0 ? "text-success" : "text-danger"} mr-2`}
+                                                                    ><i class={`fa fa-arrow-${item.increase >= 0 ? 'up' : 'down'}`}></i>{' '}
+                                                                        {round(item.increase >= 0 ? item.increase : -(item.increase))}%
+                                                                    </span>
+                                                                    <span class="text-nowrap">De {item.increase >= 0 ? 'plus' : 'moins'} qu'hier</span>
+                                                                </p>
+                                                            }
                                                         </div>
-                                                        {
-                                                            moment(params.date).format('YYYY-MM-DD') !== moment(allDocs[0]?.createdAt).format('YYYY-MM-DD') &&
-                                                            <p class="mt-3 mb-0 text-muted text-sm">
-                                                                <span
-                                                                    class={`${item.increase == 0 ? 'text-warning' : item.id == 2 ? item.increase < 0 ? "text-success" : "text-danger" : item.increase > 0 ? "text-success" : "text-danger"} mr-2`}
-                                                                ><i class={`fa fa-arrow-${item.increase >= 0 ? 'up' : 'down'}`}></i>{' '}
-                                                                    {round(item.increase >= 0 ? item.increase : -(item.increase))}%
-                                                                </span>
-                                                                <span class="text-nowrap">De {item.increase >= 0 ? 'plus' : 'moins'} qu'hier</span>
-                                                            </p>
-                                                        }
                                                     </div>
                                                 </div>
-                                            </div>
+                                                :
+                                                user.accountType != 'admin' && index === 0 &&
+                                                <div class="col-xl-3 col-lg-6" key={index} >
+                                                    <div class="card">
+                                                        <div class="card-body card-type-3">
+                                                            <div class="row">
+                                                                <div class="col">
+                                                                    <h6 class="text-muted mb-0">{item.text}</h6>
+                                                                    <span class="font-weight-bold mb-0">{item.number}</span>
+                                                                </div>
+                                                                <div class="col-auto">
+                                                                    <div class={`card-circle ${item.bgColor} text-white`}>
+                                                                        <i class={item.icon}></i>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            {
+                                                                moment(params.date).format('YYYY-MM-DD') !== moment(allDocs[0]?.createdAt).format('YYYY-MM-DD') &&
+                                                                <p class="mt-3 mb-0 text-muted text-sm">
+                                                                    <span
+                                                                        class={`${item.increase == 0 ? 'text-warning' : item.id == 2 ? item.increase < 0 ? "text-success" : "text-danger" : item.increase > 0 ? "text-success" : "text-danger"} mr-2`}
+                                                                    ><i class={`fa fa-arrow-${item.increase >= 0 ? 'up' : 'down'}`}></i>{' '}
+                                                                        {round(item.increase >= 0 ? item.increase : -(item.increase))}%
+                                                                    </span>
+                                                                    <span class="text-nowrap">De {item.increase >= 0 ? 'plus' : 'moins'} qu'hier</span>
+                                                                </p>
+                                                            }
+                                                        </div>
+                                                    </div>
+                                                </div>
 
                                         ))
                                     }

@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 import Sidebar from '../sidebar/sidebar'
 import Settings from '../settings/settings'
-import { stock as data, product } from '../../database'
 import { useStateValue } from '../../components/stateProvider'
 import CurrencyFormat from 'react-currency-format';
 import { addDoc, collection, doc, getDoc, increment, serverTimestamp, setDoc, updateDoc } from 'firebase/firestore'

@@ -17,7 +17,6 @@ export default function FinancesHistory() {
     const [{ users }, dispatch] = useStateValue()
 
     useEffect(() => {
-
         let url = window.location.href
         let param = url.split('?')[1]
         let paramVal = param?.split('=')[1]
